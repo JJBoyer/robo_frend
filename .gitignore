@@ -1,0 +1,10 @@
+# Ignore build files
+build/
+*.o
+*.bin
+*.elf
+
+# Ignore ESP-IDF temporary files
+sdkconfig
+sdkconfig.old
+idf.pyc
