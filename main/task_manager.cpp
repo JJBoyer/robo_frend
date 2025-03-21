@@ -1,9 +1,23 @@
+/*
+
+File Name: task_manager.cpp
+Author: Jacob Boyer
+Description: Handles task thread initialization,
+including inter-thread communication pointers,
+data-lock mutexes, and individual tasks
+
+*/
+
 #include "task_manager.hpp"
 #include "esp_log.h"
 
 using namespace std;
 
-// Initialize global pointers for access from all threads
+/* Information transmitted between threads:
+    pfreq -> blink frequency (determined by obstacle distance)
+    pduty -> blink brightness (determined by potentiometer input)
+    pdist -> obstacle distance (measured by ultrasonic sensor)
+*/
 unique_ptr<int> pfreq = make_unique<int>(500);
 unique_ptr<int> pduty = make_unique<int>(512);
 unique_ptr<double> pdist = make_unique<double>(1.00);
@@ -19,33 +33,38 @@ TaskHandle_t blinkHandle = NULL;
 TaskHandle_t sonicHandle = NULL;
 TaskHandle_t statHandle = NULL;
 
-// Initialize task threads
+/* Task CPU Core Assignments:
+    SetLED runs on Core 0 at 10Hz
+    Ultrasonic runs on Core 0 at 20Hz
+    GetStatus runs on Core 0 at 0.2Hz
+    BlinkLED runs on Core 1 at 10Hz
+*/
 void initTasks(){
 
-    // Initialize mutexes
+    // Initialize mutexes for pointer locking
     freqMutex = xSemaphoreCreateMutex();
     dutyMutex = xSemaphoreCreateMutex();
     distMutex = xSemaphoreCreateMutex();
 
-    // Create FreeRTOS task for LED brightness and check
+    // Initialize FreeRTOS task for setting LED brightness
     BaseType_t result0 = xTaskCreatePinnedToCore(setLEDTask, "SetLED", 2048, NULL, 2, &setHandle, 0);
     if(result0 != pdPASS){
         printf("\nTask creation failed!\nTask: SetLED\nCPU: 0\n\n");
     }
 
-    // Create FreeRTOS task for LED and check
+    // Initialize FreeRTOS task for setting LED frequency
     BaseType_t result1 = xTaskCreatePinnedToCore(blinkLedTask, "BlinkLED", 2048, NULL, 1, &blinkHandle, 1);
     if(result1 != pdPASS){
         printf("\nTask creation failed!\nTask: BlinkLED\nCPU: 1\n\n");
     }
 
-    // Create FreeRTOS task for Ultrasonic Sensor reading
+    // Initialize FreeRTOS task for measuring distance with the HC-SR04 ultrasonic sensor
     BaseType_t result2 = xTaskCreatePinnedToCore(ultrasonicTask, "Ultrasonic", 2048, NULL, 3, &sonicHandle, 0);
     if(result2 != pdPASS){
         printf("\nTask creation failed!\nTask: Ultrasonic\nCPU: 0\n\n");
     }
 
-    // Create FreeRTOS task for Status Updates and check (Create this last)
+    // Initialize FreeRTOS task for printing to the Serial Monitor
     BaseType_t result3 = xTaskCreatePinnedToCore(getStatusTask, "GetStatus", 4096, NULL, 4, &statHandle, 0);
     if(result3 != pdPASS){
         printf("\nTask creation failed!\nTask: GetStatus\nCPU: 0");

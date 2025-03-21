@@ -1,3 +1,11 @@
+/*
+
+File Name: tasks.hpp
+Author: Jacob Boyer
+Description: Header file for tasks.cpp
+
+*/
+
 #ifndef TASKS_HPP
 #define TASKS_HPP
 
@@ -6,7 +14,10 @@
 #include "sensor_control.hpp"
 #include "status.hpp"
 
-// Declare function interfaces
+/*
+Declare functions for tasks designed to run
+the various robot operations at fixed intervals
+*/
 void blinkLedTask(void* pvParameters);
 void setLEDTask(void* pvParameters);
 void ultrasonicTask(void* pvParameters);

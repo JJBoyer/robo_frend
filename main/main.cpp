@@ -1,27 +1,43 @@
-// Include libraries as needed
+/*
+
+Project Name: Robo Frend
+Description: An ESP32-based, dual-motor robot 
+designed to accept a variety of attachments for 
+use around an indoor space
+
+File Name: main.cpp
+Author: Jacob Boyer
+Description: Main loop for Robo Frend
+
+*/
+
+/* Project #include Standard
+  
+  The project standard for
+  include order is as follows:
+
+  - C/C++ Standard Libraries
+  - ESP-IDF Libraries
+  - Project Header Files
+
+*/
+
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
-
-// Include own header files
 #include "tasks.hpp"
 #include "pwm_control.hpp"
 #include "sensor_control.hpp"
 
-using namespace std;  // Use the std namespace
+using namespace std;
 
-// use external C-based app_main function as main loop for ESP32
+// ESP32 requires use of external C-based app_main loop
 extern "C" void app_main() {
 
     // Initialize peripherals
-    initPWM();    // See pwm_control.cpp for more details
-    initSensors();    // See sensor_contril.cpp for more details
-    //initI2C();  // To be included in future update
+    initSensors();
+    initPWM();
 
     // Start task threads
     initTasks();
-
-    // ADC task runs on Core 0 at 10Hz
-    // Status task runs on Core 0 at 0.2Hz
-    // PWM task runs on Core 1 at 10Hz
 
 }

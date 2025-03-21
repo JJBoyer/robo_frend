@@ -1,3 +1,11 @@
+/*
+
+File Name: task_manager.hpp
+Author: Jacob Boyer
+Description: Header file for task_manager.cpp
+
+*/
+
 #ifndef TASK_MANAGER_HPP
 #define TASK_MANAGER_HPP
 
