@@ -1,0 +1,18 @@
+
+File Name: libraries_list.txt
+Author: Jacob Boyer
+Description: This is a list of the libraries used
+throughout this project. This helpful reference should
+aid in understanding what each library does and how
+it is used when included in a file.
+
+Library Name:            | Library Description:
+freertos/FreeRTOS.h      |  - Core FreeRTOS APIs for task scheduling and time functions
+freertos/task.h          |  - Functions for creating and managing tasks
+freertos/semphr.h        |  - Functions for working with semaphores and mutexes
+driver/gpio.h            |  - GPIO configuration and control
+driver/ledc.h            |  - LEDC PWM driver for dimming and modulation
+esp_timer.h              |  - Microsecond-level high-resolution timer functions
+esp_log.h                |  - Logging macros (ESP_LOGI, ESP_LOGE, etc.)
+esp_adc/adc_oneshot.h    |  - ADC one-shot driver for reading analog inputs
+<memory>                 |  - C++ standard library smart pointers (e.g., std::unique_ptr)
