@@ -59,7 +59,7 @@ void initTasks(){
     }
 
     // Initialize FreeRTOS task for measuring distance with the HC-SR04 ultrasonic sensor
-    BaseType_t result2 = xTaskCreatePinnedToCore(ultrasonicTask, "Ultrasonic", 2048, NULL, 3, &sonicHandle, 0);
+    BaseType_t result2 = xTaskCreatePinnedToCore(ultrasonicTask, "Ultrasonic", 4096, NULL, 3, &sonicHandle, 0);
     if(result2 != pdPASS){
         printf("\nTask creation failed!\nTask: Ultrasonic\nCPU: 0\n\n");
     }
