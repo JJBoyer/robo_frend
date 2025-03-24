@@ -10,6 +10,7 @@ monitor for troubleshooting and tuning
 
 #include "status.hpp"
 #include "esp_log.h"
+#include "mutex_guard.hpp"
 
 using namespace std;
 
@@ -28,19 +29,19 @@ void getStatus(){
     double distance = 1.0;  // cm
 
     // Retrieve info from global pointers
-    if(xSemaphoreTake(dutyMutex, pdMS_TO_TICKS(10))){
+    {
+        MutexGuard lock(dutyMutex);
         duty = *pduty;
-        xSemaphoreGive(dutyMutex);
     }
-
-    if(xSemaphoreTake(freqMutex, pdMS_TO_TICKS(10))){
+    
+    {
+        MutexGuard lock(freqMutex);
         freq = *pfreq;
-        xSemaphoreGive(freqMutex);
     }
 
-    if(xSemaphoreTake(distMutex, pdMS_TO_TICKS(10))){
+    {
+        MutexGuard lock(distMutex);
         distance = *pdist;
-        xSemaphoreGive(distMutex);
     }
 
     // Print Status to Serial Monitor

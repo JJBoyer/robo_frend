@@ -12,8 +12,6 @@ only locked when in use
 #ifndef MUTEX_GUARD_HPP
 #define MUTEX_GUARD_HPP
 
-#include <memory>
-#include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
 /* MutexGuard class:
@@ -34,6 +32,6 @@ public:
     }
 private:
     SemaphoreHandle_t &_mutex;
-}
+};
 
 #endif

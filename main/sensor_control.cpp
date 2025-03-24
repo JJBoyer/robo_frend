@@ -11,6 +11,7 @@ data for position extrapolation.
 
 #include "sensor_control.hpp"
 #include "esp_log.h"
+#include "mutex_guard.hpp"
 
 using namespace std;
 
@@ -138,9 +139,10 @@ void setBright(){
     // Collect pot data
     int data = readPot();
 
-    if(xSemaphoreTake(dutyMutex, portMAX_DELAY)){
+    // Write new duty cycle to duty pointer
+    {
+        MutexGuard lock(dutyMutex);
         pduty.reset(new int(1100 - data));
-        xSemaphoreGive(dutyMutex);
     }
 
 }
@@ -154,19 +156,15 @@ void setFreq(){
 
     // Initialize utility variables
     static double distance = 1.0;
-    static double backup = 1.0;
     static int frequency = 100;
 
     // Ping ultrasonic sensor
     getDistance();
 
     // Get ultrasonic distance to object
-    if(xSemaphoreTake(distMutex, pdMS_TO_TICKS(portMAX_DELAY))){
+    {
+        MutexGuard lock(distMutex);
         distance = *pdist;
-        backup = distance;
-        xSemaphoreGive(distMutex);
-    } else {
-        distance = backup;
     }
 
     // Calculate frequency input
@@ -178,9 +176,9 @@ void setFreq(){
     }
 
     // Set new LED frequency
-    if(xSemaphoreTake(freqMutex, portMAX_DELAY)){
+    {
+        MutexGuard lock(freqMutex);
         pfreq.reset(new int(frequency));
-        xSemaphoreGive(freqMutex);
     }
 
 }
@@ -232,9 +230,9 @@ void getDistance(){
     }
 
     // Set distance pointer to current distance
-    if(xSemaphoreTake(distMutex, portMAX_DELAY)){
+    {
+        MutexGuard lock(distMutex);
         pdist.reset(new double(distance));
-        xSemaphoreGive(distMutex);
     }
 
 }
