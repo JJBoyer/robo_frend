@@ -106,9 +106,20 @@ void initSR04(){
     // Implement echo config
     gpio_config(&echo_conf);
 
+    // Configure HC-SR04 test pin
+    gpio_config_t check_conf = {
+        .pin_bit_mask = (1ULL << CHECK), // Set pin assignment
+        .mode = GPIO_MODE_INPUT        // Set to output
+    };
+    // Implement trigger config
+    gpio_config(&check_conf);
+
     // Install ISR service and attach interrupt
     gpio_install_isr_service(0);
-    gpio_isr_handler_add(ECHO, echo_isr_handler, NULL);
+    esp_err_t isr_error = gpio_isr_handler_add(ECHO, echo_isr_handler, NULL);
+    if(isr_error != ESP_OK){
+        printf("Error: ISR Not Attached. Code: %d\n", isr_error);
+    }
 
 }
 /* (WIP) initI2C:
@@ -145,6 +156,9 @@ void setFreq(){
     static double distance = 1.0;
     static double backup = 1.0;
     static int frequency = 100;
+
+    // Ping ultrasonic sensor
+    getDistance();
 
     // Get ultrasonic distance to object
     if(xSemaphoreTake(distMutex, pdMS_TO_TICKS(portMAX_DELAY))){
@@ -183,22 +197,43 @@ void setFreq(){
 */
 void getDistance(){
 
+    double distance;
+
     // Trigger Sensor - 10us HIGH signal to TRIG pin
     gpio_set_level(TRIG, 1);
     esp_rom_delay_us(10);
     gpio_set_level(TRIG, 0);
 
     // Wait for measurement to be ready
+    int cycles = 0;
     while(!measurement_ready){
         vTaskDelay(pdMS_TO_TICKS(1));  // Small delay to free CPU while waiting
+        if(++cycles >= 50){
+            printf("Warning: Echo Timeout\n");
+            return;
+        }
     }
+    measurement_ready = false;
 
     // Calculate total travel time
     int64_t time = stop_time - start_time;  // Gives travel time in microseconds
 
+    // Saturate the minimum value of travel time to block out short range errors
+    if(time < 1458){
+        time = 1458;  // microseconds
+    }
+
+    // Calculate distance
+    distance = time * 0.0343 / 2;  // time * [speed of sound] / 2
+    if(time == 1458){
+        printf("Distance is less than %lf cm.\n", distance);
+    } else {
+        printf("Distance: %lf cm\n", *pdist);
+    }
+
     // Set distance pointer to current distance
     if(xSemaphoreTake(distMutex, portMAX_DELAY)){
-        pdist.reset(new double(time * 0.0343 / 2));  // Dist = time * VelSound / 2
+        pdist.reset(new double(distance));
         xSemaphoreGive(distMutex);
     }
 

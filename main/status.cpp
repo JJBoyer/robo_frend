@@ -55,6 +55,6 @@ void getStatus(){
 
     printf("--LED Output--\n");
     printf("Frequency: %d\n", freq);
-    printf("Duty Cycle: %d\n\n", duty);
+    printf("Duty Cycle: %d\n", duty);
 
 }

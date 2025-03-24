@@ -64,5 +64,6 @@ int readPot();
 // HC-SR04 Pins
 #define TRIG GPIO_NUM_39        // Ultrasonic TRIG Pin
 #define ECHO GPIO_NUM_40        // Ultrasonic ECHO Pin
+#define CHECK GPIO_NUM_47       // Ultrasonic Test Pin
 
 #endif

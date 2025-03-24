@@ -68,7 +68,7 @@ void setLEDTask(void* pvParameters){
 void ultrasonicTask(void* pvParameters){
 
     TickType_t xLastWakeTime = xTaskGetTickCount();  // Initialize last wake time
-    const TickType_t xFrequency = pdMS_TO_TICKS(50); // Set task frequency to 20Hz
+    const TickType_t xFrequency = pdMS_TO_TICKS(100); // Set task frequency to 10Hz
 
     while(true){
         setFreq();
