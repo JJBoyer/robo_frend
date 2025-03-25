@@ -223,11 +223,6 @@ void getDistance(){
 
     // Calculate distance
     distance = time * 0.0343 / 2;  // time * [speed of sound] / 2
-    if(time == 1458){
-        printf("Distance is less than %lf cm.\n", distance);
-    } else {
-        printf("Distance: %lf cm\n", *pdist);
-    }
 
     // Set distance pointer to current distance
     {

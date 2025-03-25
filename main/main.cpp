@@ -35,7 +35,7 @@ extern "C" void app_main() {
 
     // Initialize peripherals
     initSensors();
-    initPWM();
+    initMotors();
 
     // Start task threads
     initTasks();
