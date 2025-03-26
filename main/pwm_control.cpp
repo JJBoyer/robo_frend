@@ -42,32 +42,32 @@ void initMotors(){  // Initialize the motor control pins
     gpio_config(&RPWM_conf);
 
     // Left motor direction pin 1 (IN1)
-    gpio_config_t LDIR1_conf = {
-        .pin_bit_mask = (1ULL << LEFT_DIR1_PIN), // Set pin assignment
+    gpio_config_t LFWD_conf = {
+        .pin_bit_mask = (1ULL << LEFT_FORWARD), // Set pin assignment
         .mode = GPIO_MODE_OUTPUT                 // Set to output
     };
-    gpio_config(&LDIR1_conf);
+    gpio_config(&LFWD_conf);
 
     // Left motor direction pin 2 (IN2)
-    gpio_config_t LDIR2_conf = {
-        .pin_bit_mask = (1ULL << LEFT_DIR2_PIN), // Set pin assignment
+    gpio_config_t LREV_conf = {
+        .pin_bit_mask = (1ULL << LEFT_REVERSE), // Set pin assignment
         .mode = GPIO_MODE_OUTPUT                 // Set to output
     };
-    gpio_config(&LDIR2_conf);
+    gpio_config(&LREV_conf);
 
     // Right motor direction pin 1 (IN3)
-    gpio_config_t RDIR1_conf = {
-        .pin_bit_mask = (1ULL << RIGHT_DIR1_PIN), // Set pin assignment
+    gpio_config_t RREV_conf = {
+        .pin_bit_mask = (1ULL << RIGHT_REVERSE), // Set pin assignment
         .mode = GPIO_MODE_OUTPUT                  // Set to output
     };
-    gpio_config(&RDIR1_conf);
+    gpio_config(&RREV_conf);
 
     // Right motor direction pin 2 (IN4)
-    gpio_config_t RDIR2_conf = {
-        .pin_bit_mask = (1ULL << RIGHT_DIR2_PIN), // Set pin assignment
+    gpio_config_t RFWD_conf = {
+        .pin_bit_mask = (1ULL << RIGHT_FORWARD), // Set pin assignment
         .mode = GPIO_MODE_OUTPUT                  // Set to output
     };
-    gpio_config(&RDIR2_conf);
+    gpio_config(&RFWD_conf);
 
     // PWM Timer Config
     ledc_timer_config_t ledc_timer = {
@@ -143,31 +143,46 @@ void initMotors(){  // Initialize the motor control pins
   with a blink frequency and PWM duty cycle defined
   by the setFreq() and setBright() functions
 */
-void blink(){  // Note: Repurpose to motor control
+void forward(){  // Note: Repurpose to motor control
+
+    // Set motors forward
+
+    gpio_set_level(LEFT_FORWARD, 1);
+    gpio_set_level(LEFT_REVERSE, 0);
+
+    gpio_set_level(RIGHT_FORWARD, 1);
+    gpio_set_level(RIGHT_REVERSE, 0);
 
     // Request mutex and update duty cycle
-    {
+    /*{
         MutexGuard lock(dutyMutex);
         // Turn LED on with duty cycle
         ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, ((pduty) ? *pduty : 512));
-    }
+    }*/
 
-    // Apply the new duty cycle
+    // Set motors medium speed
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, 1023);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR, 1023);
+
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR);
 
     // Request mutex and update on length
     {
         MutexGuard lock(freqMutex);
-        vTaskDelay(pdMS_TO_TICKS((pfreq) ? *pfreq : 500)); // Adjust blink frequency
+        vTaskDelay(pdMS_TO_TICKS((pfreq) ? *pfreq : 500));
     }
 
-    // Set LED pin low
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, 0);  // Turn LED off
-    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR);  // Actually apply the duty cycle
+    // Set motors low
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, 0);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR, 0);
+
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR);
     
     // Request mutex and update off length
     {
         MutexGuard lock(freqMutex);
-        vTaskDelay(pdMS_TO_TICKS((pfreq) ? *pfreq : 500)); // Adjust blink frequency
+        vTaskDelay(pdMS_TO_TICKS((pfreq) ? *pfreq : 500));
     }
 }

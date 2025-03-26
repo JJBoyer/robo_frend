@@ -29,7 +29,7 @@ SemaphoreHandle_t distMutex;
 
 // Initialize task handles
 TaskHandle_t setHandle = NULL;
-TaskHandle_t blinkHandle = NULL;
+TaskHandle_t motorHandle = NULL;
 TaskHandle_t sonicHandle = NULL;
 TaskHandle_t statHandle = NULL;
 
@@ -53,9 +53,9 @@ void initTasks(){
     }
 
     // Initialize FreeRTOS task for setting LED frequency
-    BaseType_t result1 = xTaskCreatePinnedToCore(blinkLedTask, "BlinkLED", 2048, NULL, 1, &blinkHandle, 1);
+    BaseType_t result1 = xTaskCreatePinnedToCore(motorTask, "Motor", 2048, NULL, 1, &motorHandle, 1);
     if(result1 != pdPASS){
-        printf("\nTask creation failed!\nTask: BlinkLED\nCPU: 1\n\n");
+        printf("\nTask creation failed!\nTask: Motor\nCPU: 1\n\n");
     }
 
     // Initialize FreeRTOS task for measuring distance with the HC-SR04 ultrasonic sensor
@@ -80,8 +80,8 @@ void printTaskStatus(){
     if(setHandle != NULL){
         printf("SetLED remaining stack: %d words\n", uxTaskGetStackHighWaterMark(setHandle));
     }        
-    if(blinkHandle != NULL){
-        printf("BlinkLED remaining stack: %d words\n", uxTaskGetStackHighWaterMark(blinkHandle));
+    if(motorHandle != NULL){
+        printf("Motor remaining stack: %d words\n", uxTaskGetStackHighWaterMark(motorHandle));
     }
     if(sonicHandle != NULL){
         printf("Ultrasonic remaining stack: %d words\n", uxTaskGetStackHighWaterMark(sonicHandle));
@@ -89,5 +89,4 @@ void printTaskStatus(){
     if(statHandle != NULL){
         printf("GetStatus remaining stack: %d words\n\n", uxTaskGetStackHighWaterMark(statHandle));
     }
-
 }

@@ -27,7 +27,7 @@ extern SemaphoreHandle_t distMutex;
 
 // Declare task handles for task management
 extern TaskHandle_t setHandle;
-extern TaskHandle_t blinkHandle;
+extern TaskHandle_t motorHandle;
 extern TaskHandle_t sonicHandle;
 extern TaskHandle_t statHandle;
 

@@ -18,7 +18,7 @@ Description: Header file for tasks.cpp
 Declare functions for tasks designed to run
 the various robot operations at fixed intervals
 */
-void blinkLedTask(void* pvParameters);
+void motorTask(void* pvParameters);
 void setLEDTask(void* pvParameters);
 void ultrasonicTask(void* pvParameters);
 void getStatusTask(void* pvParameters);

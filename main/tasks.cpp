@@ -25,13 +25,13 @@ using namespace std;
   CPU Core: 1
   Task Frequency: 10Hz
 */
-void blinkLedTask(void* pvParameters){
+void motorTask(void* pvParameters){
 
     TickType_t xLastWakeTime = xTaskGetTickCount();  // Initialize last wake time
     const TickType_t xFrequency = pdMS_TO_TICKS(100);  // Sets task frequency to 10Hz
 
     while(true){
-        blink();
+        forward();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);  // Wait until 100ms has passed from task start
     }
 }
