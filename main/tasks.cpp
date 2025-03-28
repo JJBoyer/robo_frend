@@ -16,11 +16,11 @@ be run.
 
 using namespace std;
 
-/* blinkLedTask:
-  Simple task designed to run the blink()
-  function, which receives a frequency and
-  a duty cycle from the setFreq() and setBright()
-  functions and drives the LED at those values
+/* motorTask:
+  Simple task designed to run the forward()
+  function, which receives sets the motors
+  to turn forward at full speed as simple
+  motor control
 
   CPU Core: 1
   Task Frequency: 10Hz
@@ -32,26 +32,6 @@ void motorTask(void* pvParameters){
 
     while(true){
         forward();
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);  // Wait until 100ms has passed from task start
-    }
-}
-
-/* setLEDTask:
-  Simple task designed to run the setBright()
-  function, which reads the ADC input from the
-  potentiometer and sets the duty cycle of the
-  PWM output based on the ADC reading
-
-  CPU Core: 0
-  Task Frequency: 10Hz
-*/
-void setLEDTask(void* pvParameters){
-
-    TickType_t xLastWakeTime = xTaskGetTickCount();  // Initialize last wake time
-    const TickType_t xFrequency = pdMS_TO_TICKS(100);  // Sets task frequency to 10Hz 
-
-    while(true){
-        setBright();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);  // Wait until 100ms has passed from task start
     }
 }
@@ -71,7 +51,7 @@ void ultrasonicTask(void* pvParameters){
     const TickType_t xFrequency = pdMS_TO_TICKS(100); // Set task frequency to 10Hz
 
     while(true){
-        setFreq();
+        getDistance();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);  // Wait until 50ms has passed from task start
     }
 }

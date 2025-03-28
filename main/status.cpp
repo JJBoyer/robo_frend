@@ -25,7 +25,7 @@ void getStatus(){
 
     // Initialize variables to store info
     int duty = 512;
-    int freq = 500;
+    double accel = 1.0;
     double distance = 1.0;  // cm
 
     // Retrieve info from global pointers
@@ -35,8 +35,8 @@ void getStatus(){
     }
     
     {
-        MutexGuard lock(freqMutex);
-        freq = *pfreq;
+        MutexGuard lock(stateMutex);
+        accel = 9.81 * (*pstate).acc;
     }
 
     {
@@ -54,8 +54,8 @@ void getStatus(){
     printf("Ultrasonic Mode: Frequency\n");
     printf("Distance: %lf cm\n\n", distance);
 
-    printf("--LED Output--\n");
-    printf("Frequency: %d\n", freq);
+    printf("--Motor Output--\n");
+    printf("Acceleration: %lf m/s^2\n", accel);
     printf("Duty Cycle: %d\n", duty);
 
 }

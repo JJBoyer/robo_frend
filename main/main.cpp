@@ -25,13 +25,16 @@ Description: Main loop for Robo Frend
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "tasks.hpp"
-#include "pwm_control.hpp"
+#include "motor_control.hpp"
 #include "sensor_control.hpp"
+#include "globals.hpp"
 
 using namespace std;
 
 // ESP32 requires use of external C-based app_main loop
 extern "C" void app_main() {
+
+    initGlobals();
 
     // Initialize peripherals
     initSensors();
