@@ -193,9 +193,6 @@ void estimateState(mpu6050_handle_t& mpu_sensor){
         .acc  = 0
     };
 
-    // Degree to radian conversion for sin() and cos()
-    const float deg_to_rad = M_PI / 180.0f;
-
     // Set time step value in seconds for discrete integration
     const float dt = 0.025;
 
