@@ -12,12 +12,13 @@ Description: Header file for task_manager.cpp
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "tasks.hpp"
+#include "imu.hpp"
 #include "globals.hpp"
 
 // Declare task handles for task management
-extern TaskHandle_t setHandle;
 extern TaskHandle_t motorHandle;
 extern TaskHandle_t sonicHandle;
+extern TaskHandle_t estimateHandle;
 extern TaskHandle_t statHandle;
 
 // Task initialization function

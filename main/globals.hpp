@@ -7,9 +7,13 @@
 
 // Declare a state_t struct for use in state estimation
 typedef struct {
-    float pos;
-    float vel;
-    float acc;
+    float posX; // position along global x-axis
+    float posY; // position along global y-axis
+    float th;   // angle from global y-axis about z-axis
+    float velX; // velocity along global x-axis
+    float velY; // velocity along global y-axis
+    float w;    // angular velocity about z-axis
+    float acc;  // acceleration along robot y-axis
 } state_t;
 
 // Declare external global pointers for thread communication

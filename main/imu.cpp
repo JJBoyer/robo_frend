@@ -9,6 +9,7 @@
 
 */
 
+#include <cmath>
 #include "imu.hpp"
 #include "esp_log.h"
 #include "mutex_guard.hpp"
@@ -170,27 +171,48 @@ void measureGyro(mpu6050_handle_t& mpu_sensor){
 */
 void estimateState(mpu6050_handle_t& mpu_sensor){
 
+    // Initialize state_t for current state
     static state_t this_state = {
-        .pos = 0,
-        .vel = 0,
-        .acc = 0
+        .posX = 0,
+        .posY = 0,
+        .th   = 0,
+        .velX = 0,
+        .velY = 0,
+        .w    = 0,
+        .acc  = 0
     };
 
+    // Initialize state_t for previous state
     static state_t last_state = {
-        .pos = 0,
-        .vel = 0,
-        .acc = 0
+        .posX = 0,
+        .posY = 0,
+        .th   = 0,
+        .velX = 0,
+        .velY = 0,
+        .w    = 0,
+        .acc  = 0
     };
 
-    const float dt = 0.025;  // seconds
+    // Degree to radian conversion for sin() and cos()
+    const float deg_to_rad = M_PI / 180.0f;
+
+    // Set time step value in seconds for discrete integration
+    const float dt = 0.025;
 
     // Collect data for this timestep
     measureAccel(mpu_sensor);
+    measureGyro(mpu_sensor);
 
-    // Compute state estimation
-    this_state.acc = last_state.acc + 9.81 * accel.acce_y;  // Y-axis is forward
-    this_state.vel = last_state.vel + (last_state.acc + this_state.acc) * dt / 2;
-    this_state.pos = last_state.pos + (last_state.vel + this_state.vel) * dt / 2;
+    // Compute angular state estimation
+    this_state.w = gyro.gyro_z;
+    this_state.th = fmod(last_state.th + (last_state.w + this_state.w) * dt / 2, 360.0f);
+
+    // Compute linear state estimation in 2D
+    this_state.acc = 9.81 * accel.acce_y;  // robot y-axis is forward
+    this_state.velX = last_state.velX + (last_state.acc * sin(last_state.th * deg_to_rad) + this_state.acc * sin(this_state.th * deg_to_rad)) * dt / 2;
+    this_state.velY = last_state.velY + (last_state.acc * cos(last_state.th * deg_to_rad) + this_state.acc * cos(this_state.th * deg_to_rad)) * dt / 2;
+    this_state.posX = last_state.posX + (last_state.velX + this_state.velX) * dt / 2;
+    this_state.posY = last_state.posY + (last_state.velY + this_state.velY) * dt / 2;
 
     // Save state for this time step for use in next time step
     last_state = this_state;
@@ -198,7 +220,7 @@ void estimateState(mpu6050_handle_t& mpu_sensor){
     // Write new state to global pointer for use by GNC tasks
     {
         MutexGuard lock(stateMutex);
-        pstate.reset(new state_t(this_state));    
+        *pstate = this_state;    
     }
 
 }

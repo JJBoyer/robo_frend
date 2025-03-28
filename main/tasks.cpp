@@ -56,6 +56,22 @@ void ultrasonicTask(void* pvParameters){
     }
 }
 
+/* estimateStateTask:
+    Defines a task that reads data from the MPU6050 and
+    uses the data to estimate the state of the robot at
+    fixed time steps.
+*/
+void estimateStateTask(void* pvParameters){
+
+    TickType_t xLastWakeTime = xTaskGetTickCount();  // Initialize last wake time
+    const TickType_t xFrequency = pdMS_TO_TICKS(25); // Set task frequency to 40Hz
+
+    while(true){
+        estimateState(mpu_sensor);
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);  // Wait until 25ms has passed from task start
+    }
+}
+
 /* getStatusTask:
   Simple task designed to run the getStatus()
   function, which writes any data desired for

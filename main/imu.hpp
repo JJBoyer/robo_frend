@@ -13,6 +13,8 @@
 #include "mpu6050.h"
 #include "globals.hpp"
 
+extern mpu6050_handle_t mpu_sensor;
+
 // Function to initialize the MPU6050 IMU
 void init6050();
 

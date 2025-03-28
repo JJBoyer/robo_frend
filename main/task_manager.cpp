@@ -16,6 +16,7 @@ using namespace std;
 // Initialize task handles
 TaskHandle_t motorHandle = NULL;
 TaskHandle_t sonicHandle = NULL;
+TaskHandle_t estimateHandle = NULL;
 TaskHandle_t statHandle = NULL;
 
 /* Task CPU Core Assignments:
@@ -38,9 +39,15 @@ void initTasks(){
         printf("\nTask creation failed!\nTask: Ultrasonic\nCPU: 0\n\n");
     }
 
-    // Initialize FreeRTOS task for printing to the Serial Monitor
-    BaseType_t result2 = xTaskCreatePinnedToCore(getStatusTask, "GetStatus", 4096, NULL, 4, &statHandle, 0);
+    // Initialize FreeRTOS task for using MPU6050 to estimate robot state
+    BaseType_t result2 = xTaskCreatePinnedToCore(estimateStateTask, "StateEstimator", 4096, mpu_sensor, 4, &estimateHandle, 0);
     if(result2 != pdPASS){
+        printf("\nTask creation failed!\nTask: StateEstimator\nCPU: 0\n\n");
+    }
+
+    // Initialize FreeRTOS task for printing to the Serial Monitor
+    BaseType_t resultn = xTaskCreatePinnedToCore(getStatusTask, "GetStatus", 4096, NULL, 4, &statHandle, 0);
+    if(resultn != pdPASS){
         printf("\nTask creation failed!\nTask: GetStatus\nCPU: 0");
     }
 
@@ -50,16 +57,16 @@ void initTasks(){
 void printTaskStatus(){
 
     // Readout remaining space in each task
-    printf("--Task Memory Use--\n");
-    if(setHandle != NULL){
-        printf("SetLED remaining stack: %d words\n", uxTaskGetStackHighWaterMark(setHandle));
-    }        
+    printf("--Task Memory Use--\n");       
     if(motorHandle != NULL){
         printf("Motor remaining stack: %d words\n", uxTaskGetStackHighWaterMark(motorHandle));
     }
     if(sonicHandle != NULL){
         printf("Ultrasonic remaining stack: %d words\n", uxTaskGetStackHighWaterMark(sonicHandle));
     }
+    if(estimateHandle != NULL){
+        printf("StateEstimator remaining stack: %d words\n", uxTaskGetStackHighWaterMark(estimateHandle));
+    } 
     if(statHandle != NULL){
         printf("GetStatus remaining stack: %d words\n\n", uxTaskGetStackHighWaterMark(statHandle));
     }
