@@ -1,6 +1,6 @@
 /*
 
-File Name: status.cpp
+Filename: status.cpp
 Author: Jacob Boyer
 Description: Defines getStatus(), a customizable
 debugging function that writes data to the serial
@@ -16,15 +16,18 @@ using namespace std;
 
 /* getStatus:
   Collects data necessary to provide the desired
-  information, then outputs the information to the
+  feedback, then outputs the information to the
   serial monitor.
 */
 void getStatus(){
 
-    // Get information from other tasks
+    // Get feedback from other tasks
 
     // Initialize variables to store info
-    int duty = 512;
+    motorOut_t duty = {
+        .left  = 512,
+        .right = 512
+    };
     double accel = 1.0;
     double distance = 1.0;  // cm
 
@@ -56,6 +59,7 @@ void getStatus(){
 
     printf("--Motor Output--\n");
     printf("Acceleration: %lf m/s^2\n", accel);
-    printf("Duty Cycle: %d\n", duty);
+    printf("Left Duty Cycle: %d\n", duty.left);
+    printf("Right Duty Cycle: %d\n", duty.right);
 
 }

@@ -1,3 +1,13 @@
+/*
+
+Filename: globals.cpp
+Author: Jacob Boyer
+Description: A file designed to improve the scalability of the inter-task
+communication, allowing each pointer and corresponding mutex to be defined
+once in this file and included in all files that use it.
+
+*/
+
 #include "globals.hpp"
 #include "esp_log.h"
 #include <stdlib.h>
@@ -6,7 +16,7 @@
 using namespace std;
 
 // Allocate global pointer memory
-unique_ptr<int> pduty = nullptr;
+unique_ptr<motorOut_t> pduty = nullptr;
 unique_ptr<double> pdist = nullptr;
 unique_ptr<state_t> pstate = nullptr;
 unique_ptr<queue<Pose2D_t>> pway = nullptr;
@@ -18,6 +28,10 @@ SemaphoreHandle_t distMutex  = nullptr;
 SemaphoreHandle_t stateMutex = nullptr;
 SemaphoreHandle_t wayMutex   = nullptr;
 SemaphoreHandle_t pathMutex  = nullptr;
+
+// Define constant system parameters
+const float velocityTarget = 0.2;
+const float wheelBaseWidth = 0.15;
 
 void initGlobals() {
 
@@ -32,7 +46,7 @@ void initGlobals() {
     // Initialize global pointers
     { // dutyMutex
         MutexGuard lock(dutyMutex);
-        pduty.reset(new int(0));
+        pduty.reset(new motorOut_t{0, 0});
     }
 
     { // stateMutex

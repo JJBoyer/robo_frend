@@ -1,5 +1,5 @@
 idf_component_register(
-	SRCS "globals.cpp" "main.cpp" "motor_control.cpp" "sensor_control.cpp"
+	SRCS "pure_pursuit.cpp" "globals.cpp" "main.cpp" "motor_control.cpp" "sensor_control.cpp"
 	"tasks.cpp" "status.cpp" "task_manager.cpp" "imu.cpp" "globals.cpp"
 	"path_planner.cpp"
     INCLUDE_DIRS "."

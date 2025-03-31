@@ -1,3 +1,15 @@
+/*
+
+Filename: path_planner.cpp
+Author: Jacob Boyer
+Description: Receives a waypoint from the waypoint queue,
+compares it to the state provided by the state estimator,
+and uses a cubic Bezier curve to generate a path to feed
+the pure pursuit tracker. Outputs the path vector to the
+ppath global pointer.
+
+*/
+
 #include "path_planner.hpp"
 #include "mutex_guard.hpp"
 
@@ -6,6 +18,10 @@ using namespace std;
 Pose2D_t start;
 Pose2D_t target;
 
+/* getStart:
+    Pulls the current state from pstate and saves it
+    to start for use in generating the Bezier curve.
+*/
 void getStart(){
 
     state_t current;
@@ -20,8 +36,13 @@ void getStart(){
 
 }
 
-void getEnd(){
+/* getTarget:
+    Pulls the next waypoint off the queue and saves it
+    to target for use in generating the Bezier curve.
+*/
+void getTarget(){
 
+    // Take wayMutex to secure pwaypt
     MutexGuard lock(wayMutex);
 
     // Check if waypoint is available
@@ -38,6 +59,10 @@ void getEnd(){
 
 }
 
+/* computeControlPoints:
+    Takes in start and target poses, as well as a user-defined d-value,
+    then computes the control points necessary for generating the curve.
+*/
 void computeControlPoints(const Pose2D_t& start, const Pose2D_t& target, float d, pathPoint_t& P0, 
                           pathPoint_t& P1, pathPoint_t& P2, pathPoint_t& P3) {
 
@@ -58,6 +83,13 @@ void computeControlPoints(const Pose2D_t& start, const Pose2D_t& target, float d
 
 }
 
+/* generateBezierPath:
+    Takes in the start and target poses, d, and a number of points
+    to define the resolution of the curve. Computes the control points
+    and applies the cubic Bezier curve equation for each point to 
+    generate the path. The points are saved to a vector, which is then 
+    exported to ppath for use in pure pursuit.
+*/
 void generateBezierPath(const Pose2D_t& start, const Pose2D_t target, float d, int num_points){
 
     // Compute the control points based on desired start and end poses
@@ -81,9 +113,16 @@ void generateBezierPath(const Pose2D_t& start, const Pose2D_t target, float d, i
     }
 }
 
+/* bezierPoint:
+    Takes in the control points and path progress variable,
+    then applies the cubic Bezier curve equation for that point.
+*/
 pathPoint_t bezierPoint(float t, const pathPoint_t& P0, const pathPoint_t& P1, const pathPoint_t& P2, const pathPoint_t& P3){
 
+    // Calculate u for use in the Bezier equation
     float u = 1.0f - t;
+
+    // Use the Bezier equation to calculate the point and return it
     return P0 * (u * u * u) + P1 * (3 * u * u * t) + P2 * (3 * u * t * t) + P3 * (t * t * t);
 
 }

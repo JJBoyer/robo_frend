@@ -1,8 +1,8 @@
 /*
 
-    Filename: imu.hpp
-    Author: Jacob Boyer
-    Description: Header file for imu.cpp
+Filename: imu.hpp
+Author: Jacob Boyer
+Description: Header file for imu.cpp
 
 */
 
@@ -19,7 +19,7 @@ extern mpu6050_handle_t mpu_sensor;
 void init6050();
 
 // Function to scan for I2C devices
-void scan_i2c_bus(i2c_port_t port);
+void scanBus(i2c_port_t port);
 
 // Function to activate IMY on startup
 void wakeIMU();

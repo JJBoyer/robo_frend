@@ -1,6 +1,6 @@
 /*
 
-File Name: tasks.hpp
+Filename: tasks.hpp
 Author: Jacob Boyer
 Description: Header file for tasks.cpp
 
@@ -23,6 +23,8 @@ void motorTask(void* pvParameters);
 void ultrasonicTask(void* pvParameters);
 void estimateStateTask(void* pvParameters);
 void getStatusTask(void* pvParameters);
+
+// Function to initialize all tasks in main.cpp
 void initTasks();
 
 #endif

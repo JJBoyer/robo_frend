@@ -1,6 +1,6 @@
 /*
 
-File Name: tasks.cpp
+Filename: tasks.cpp
 Author: Jacob Boyer
 Description: Define tasks to facilitate
 individual robot operations at definite
@@ -18,9 +18,11 @@ using namespace std;
 
 /* motorTask:
   Simple task designed to run the forward()
-  function, which receives sets the motors
+  function, which sets the motors
   to turn forward at full speed as simple
-  motor control
+  motor control. Will be updated to run
+  motors at specific speeds and directions
+  once PD control is implemented.
 
   CPU Core: 1
   Task Frequency: 10Hz
@@ -37,13 +39,13 @@ void motorTask(void* pvParameters){
 }
 
 /* ultrasonicTask:
-  Simple task designed to run the setFreq()
+  Simple task designed to run the getDistance()
   function, which takes the distance measured
   by the ultrasonic sensor and sets the blink
   frequency based on the distance.
 
   CPU Core: 0
-  Task Frequency: 20Hz
+  Task Frequency: 10Hz
 */
 void ultrasonicTask(void* pvParameters){
 
@@ -52,14 +54,18 @@ void ultrasonicTask(void* pvParameters){
 
     while(true){
         getDistance();
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);  // Wait until 50ms has passed from task start
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);  // Wait until 100ms has passed from task start
     }
 }
 
 /* estimateStateTask:
-    Defines a task that reads data from the MPU6050 and
-    uses the data to estimate the state of the robot at
+    Simple task designed to run the estimateState() function, 
+    which reads accelerometer and gyro data from the MPU6050 
+    and uses the data to estimate the state of the robot at
     fixed time steps.
+
+    CPU Core: 0
+    Task Frequency: 40Hz
 */
 void estimateStateTask(void* pvParameters){
 
@@ -82,12 +88,11 @@ void estimateStateTask(void* pvParameters){
 */
 void getStatusTask(void* pvParameters){
 
-    TickType_t xLastWakeTime = xTaskGetTickCount();  // Offset task to avoid interference with readPot
-    const TickType_t xFrequency = pdMS_TO_TICKS(5000);  // Set task frequency to 0.2Hz
+    TickType_t xLastWakeTime = xTaskGetTickCount();    // Initialize last wake time
+    const TickType_t xFrequency = pdMS_TO_TICKS(5000); // Set task frequency to 0.2Hz
 
     while(true){
-        // Display remaining words in the stack (1 word = 1 int = 4 bytes)
         getStatus();
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);  // run task at ~0.2Hz
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);   // Wait until 5s has passed from task start
     }
 }

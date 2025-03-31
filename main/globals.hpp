@@ -1,3 +1,13 @@
+/*
+
+Filename: globals.hpp
+Author: Jacob Boyer
+Description: Header file for globals.cpp. Defines structs used
+in transmitting states, waypoints, and paths between members in
+the autonomy stack.
+
+*/
+
 #ifndef GLOBALS_HPP
 #define GLOBALS_HPP
 
@@ -39,8 +49,14 @@ struct pathPoint_t {
     pathPoint_t operator*(float scalar) const { return {x * scalar, y * scalar}; }
 };
 
+// Declare a motorOut_t struct for use in sending outputs to motors
+typedef struct {
+    int left;
+    int right;
+} motorOut_t;
+
 // Declare external global pointers for thread communication
-extern std::unique_ptr<int> pduty;
+extern std::unique_ptr<motorOut_t> pduty;
 extern std::unique_ptr<double> pdist;
 extern std::unique_ptr<state_t> pstate;
 extern std::unique_ptr<std::queue<Pose2D_t>> pwaypt;
@@ -52,6 +68,10 @@ extern SemaphoreHandle_t distMutex;
 extern SemaphoreHandle_t stateMutex;
 extern SemaphoreHandle_t wayMutex;
 extern SemaphoreHandle_t pathMutex;
+
+// Declare system parameters
+extern const float velocityTarget;
+extern const float wheelBaseWidth;
 
 void initGlobals();
 

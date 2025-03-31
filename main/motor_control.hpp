@@ -1,6 +1,6 @@
 /*
 
-File Name: motor_control.hpp
+Filename: motor_control.hpp
 Author: Jacob Boyer
 Description: Header file for motor_control.hpp
 
@@ -15,7 +15,7 @@ Description: Header file for motor_control.hpp
 // Function to initialize motor control pins
 void initMotors();
 
-// Function to write PWM signal to LED
+// Function to write PWM signal to motors
 void forward();
 
 // Define PWM hardware pin

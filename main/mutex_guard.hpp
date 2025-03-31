@@ -1,6 +1,6 @@
 /*
 
-File Name: mutex_guard.hpp
+Filename: mutex_guard.hpp
 Author: Jacob Boyer
 Description: Creates a wrapper for mutex
 handling, ensuring RAII principles are applied
@@ -15,7 +15,7 @@ only locked when in use
 #include "freertos/semphr.h"
 
 /* MutexGuard class:
-  Use RAII with a class that takes the mutex in
+  Uses RAII with a class that takes the mutex in
   the constructor, and returns the mutex in the
   destructor, ensuring the mutex is always
   unlocked once the object goes out of scope

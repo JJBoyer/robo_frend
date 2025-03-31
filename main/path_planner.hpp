@@ -1,3 +1,11 @@
+/*
+
+Filename: path_planner.hpp
+Author: Jacob Boyer
+Description: Header file for path_planner.cpp
+
+*/
+
 #ifndef PATH_PLANNER_HPP
 #define PATH_PLANNER_HPP
 

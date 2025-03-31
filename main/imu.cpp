@@ -1,11 +1,11 @@
 /*
 
-    Filename: imu.cpp
-    Author: Jacob Boyer
-    Description: Defines functions to initialize
-    the MPU6050 IMU and parse the data from the IMU
-    to a more usable format for the control and 
-    navigation tasks.
+Filename: imu.cpp
+Author: Jacob Boyer
+Description: Defines functions to initialize
+the MPU6050 IMU and parse the data from the IMU
+to a more usable format for the control and 
+navigation tasks.
 
 */
 
@@ -19,7 +19,7 @@ using namespace std;
 // Create IMU handle
 mpu6050_handle_t mpu_sensor = NULL;
 
-// Create IMU data holders
+// Create IMU data variables
 mpu6050_acce_value_t accel;
 mpu6050_gyro_value_t gyro;
 mpu6050_gyro_value_t gyro_bias;
@@ -31,20 +31,25 @@ mpu6050_gyro_value_t gyro_bias;
 */
 void init6050(){
 
+    // Initialize the IMU handle
     mpu_sensor = mpu6050_create(I2C_NUM_0, 0x68);
-
     if(mpu_sensor == NULL){
         printf("MPU6050 handle is NULL!");
         return;
     }
 
-    scan_i2c_bus(I2C_NUM_0);
+    // Confirm connection to the IMU over the I2C bus
+    scanBus(I2C_NUM_0);
     wakeIMU();
     vTaskDelay(pdMS_TO_TICKS(100));
+
+    // Measure bias on startup and test calibration on 
+    // an initial measurement
     getGyroBias();
     measureAccel(mpu_sensor);
     measureGyro(mpu_sensor);
 
+    // Display test values
     printf("Accel Data: x = %.2f, y = %.2f, z = %.2f\n", accel.acce_x, accel.acce_y, accel.acce_z);
     printf("Gyro Data: x = %.2f, y = %.2f, z = %.2f\n", gyro.gyro_x, gyro.gyro_y, gyro.gyro_z);
     
@@ -57,15 +62,23 @@ void init6050(){
     function displays the address of each device
     found.
 */
-void scan_i2c_bus(i2c_port_t port) {
+void scanBus(i2c_port_t port) {
+
     printf("I2C scanning...\n");
+
+    // Ping every address for a response
     for (int addr = 1; addr < 127; addr++) {
+        // Generate a write command for each address
         i2c_cmd_handle_t cmd = i2c_cmd_link_create();
         i2c_master_start(cmd);
         i2c_master_write_byte(cmd, (addr << 1) | I2C_MASTER_WRITE, true);
         i2c_master_stop(cmd);
+
+        // Send the command and wait 100ms for an ACK
         esp_err_t err = i2c_master_cmd_begin(port, cmd, pdMS_TO_TICKS(100));
         i2c_cmd_link_delete(cmd);
+
+        // If an address responds, display the address on the serial monitor
         if (err == ESP_OK) {
             printf("Found device at 0x%02X\n", addr);
         }
@@ -82,12 +95,18 @@ void scan_i2c_bus(i2c_port_t port) {
 void wakeIMU(){
 
     printf("Waking IMU...\n");
+
+    // Define wake_cmd byte
     uint8_t wake_cmd[2] = {0x6B, 0x00};  // PWR_MGMT_1 = 0 (wake up)
+
+    // Generate the command to wake the IMU
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (0x68 << 1) | I2C_MASTER_WRITE, true);
     i2c_master_write(cmd, wake_cmd, 2, true);
     i2c_master_stop(cmd);
+
+    // Send command and await an ACK to confirm reception
     esp_err_t err = i2c_master_cmd_begin(I2C_NUM_0, cmd, pdMS_TO_TICKS(100));
     i2c_cmd_link_delete(cmd);
 

@@ -1,6 +1,6 @@
 /*
 
-File Name: sensor_control.hpp
+Filename: sensor_control.hpp
 Author: Jacob Boyer
 Description: Header file for sensor_control.cpp
 

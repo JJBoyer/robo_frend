@@ -1,10 +1,10 @@
 /*
 
-File Name: motor_control.cpp
+Filename: motor_control.cpp
 Author: Jacob Boyer
 Description: Defines a function to initialize
 the pwm configuration and channel, then defines
-functions to use PWM to control LEDs and actuators
+functions to use PWM to control LEDs and actuators.
 
 */
 
@@ -17,6 +17,11 @@ functions to use PWM to control LEDs and actuators
 #define MOTOR_HIGH 1023
 
 using namespace std;
+
+motorOut_t motorPWM = {
+    .left = 0,
+    .right = 0
+};
 
 /* initMotors:
   Performs the required configuration and initialization
@@ -139,9 +144,12 @@ void initMotors(){  // Initialize the motor control pins
 
 /* forward:
   Uses a PWM signal to adjust the forward speed
-  of a dual motor drive.
+  of a dual motor drive. 
+  
+  Note: currently implemented with constant high 
+  value while awaiting controller implementation.
 */
-void forward(){  // Note: Repurpose to motor control
+void forward(){
 
     // Set motors forward
     gpio_set_level(LEFT_FORWARD, 1);
@@ -150,9 +158,16 @@ void forward(){  // Note: Repurpose to motor control
     gpio_set_level(RIGHT_FORWARD, 1);
     gpio_set_level(RIGHT_REVERSE, 0);
 
+    {
+        MutexGuard lock(dutyMutex);
+
+        motorPWM.left = (*pduty).left;
+        motorPWM.right = (*pduty).right;
+    }
+
     // Set motors full speed
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, MOTOR_HIGH);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR, MOTOR_HIGH);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, motorPWM.left);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR, motorPWM.right);
 
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR);

@@ -1,6 +1,6 @@
 /*
 
-File Name: task_manager.cpp
+Filename: task_manager.cpp
 Author: Jacob Boyer
 Description: Handles task thread initialization,
 including inter-thread communication pointers,
@@ -20,14 +20,14 @@ TaskHandle_t estimateHandle = NULL;
 TaskHandle_t statHandle = NULL;
 
 /* Task CPU Core Assignments:
-    SetLED runs on Core 0 at 10Hz
-    Ultrasonic runs on Core 0 at 20Hz
+    Motor runs on Core 1 at 10Hz
+    Ultrasonic runs on Core 0 at 10Hz
+    StateEstimator runs on Core 0 at 40Hz
     GetStatus runs on Core 0 at 0.2Hz
-    BlinkLED runs on Core 1 at 10Hz
 */
 void initTasks(){
 
-    // Initialize FreeRTOS task for setting LED frequency
+    // Initialize FreeRTOS task for controlling motor output
     BaseType_t result0 = xTaskCreatePinnedToCore(motorTask, "Motor", 2048, NULL, 1, &motorHandle, 1);
     if(result0 != pdPASS){
         printf("\nTask creation failed!\nTask: Motor\nCPU: 1\n\n");
@@ -53,7 +53,11 @@ void initTasks(){
 
 }
 
-// Display the stack usage of the tasks
+/* printTaskStatus:
+    Measure the remaining stack space for each task.
+    For use in optimizing memory allocation and identifying
+    stack overflows.
+*/
 void printTaskStatus(){
 
     // Readout remaining space in each task

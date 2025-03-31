@@ -1,6 +1,6 @@
 /*
 
-File Name: status.hpp
+Filename: status.hpp
 Author: Jacob Boyer
 Description: Header file for status.hpp
 

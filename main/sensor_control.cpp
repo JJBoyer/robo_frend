@@ -1,6 +1,6 @@
 /*
 
-File Name: sensor_control.cpp
+Filename: sensor_control.cpp
 Author: Jacob Boyer
 Description: Defines a function to initialize the
 sensors for robot control, then defines functions
@@ -31,8 +31,9 @@ volatile bool measurement_ready = false;
   getDistance() one the measurement_ready flag is raised.
 */
 void IRAM_ATTR echo_isr_handler(void* arg){
+    // Get timestamp (in microseconds)
     if (gpio_get_level(ECHO) == 1) {
-        start_time = esp_timer_get_time(); // Get timestamp (in microseconds)
+        start_time = esp_timer_get_time();
     } else {
         stop_time = esp_timer_get_time();
         measurement_ready = true;
@@ -105,7 +106,7 @@ void initI2C(){
 
 }
 
-/* getDistance: NOTE: adapt to obstacle avoidance
+/* getDistance: NOTE - adapt to obstacle avoidance
   Activates the HC-SR04 ultrasonic sensor, then
   measures the time taken for the signal to reflect
   from the nearest object. Then, the distance to the

@@ -5,7 +5,7 @@ Description: An ESP32-based, dual-motor robot
 designed to accept a variety of attachments for 
 use around an indoor space
 
-File Name: main.cpp
+Filename: main.cpp
 Author: Jacob Boyer
 Description: Main loop for Robo Frend
 
@@ -34,6 +34,7 @@ using namespace std;
 // ESP32 requires use of external C-based app_main loop
 extern "C" void app_main() {
 
+    // Initialize global assets
     initGlobals();
 
     // Initialize peripherals
