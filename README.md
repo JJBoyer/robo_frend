@@ -50,3 +50,7 @@ This is an active development project.
 The repo reflects a work-in-progress implementation as part of a larger effort to develop onboard real-time autonomy on embedded platforms. 
 Check back for updates as new functionality is added and tested.
 
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
