@@ -1,7 +1,7 @@
 # robo_frend – ESP32 Autonomous Navigation Platform
 
 ## Overview
-**robo_frend** is a real-time autonomous robot built on the ESP32-S3 platform using C++ and FreeRTOS. 
+Robo Frend is a real-time autonomous robot built on the ESP32-S3 platform using C++ and FreeRTOS. 
 The project explores onboard autonomy through modular task-based control, sensor fusion, and trajectory tracking — all implemented on a mobile robot designed for dynamic navigation. 
 Upon completion of the first version, robo_frend will be able to navigate to a user-entered waypoint with a specified heading on an open grid (i.e. [5, 3, 45deg]).
 
@@ -19,16 +19,16 @@ The robot’s autonomy stack is structured around modular tasks managed by FreeR
 Each major function of the system—motion, sensing, communication, and control—is isolated into its own task to ensure real-time responsiveness and maintainable concurrency.
 
 - **State Estimation Task**  
-  Continuously reads IMU data over I2C to estimate the robot’s 2D position and orientation using integrated acceleration and angular velocity. This state estimate forms the basis for control and path planning decisions.
+  Continuously reads IMU data over I2C to estimate the robot’s 2D position and orientation using integrated acceleration and angular velocity. This state estimate 
+  forms the basis for control and path planning decisions.
 
 - **Path Planning Task**  
   Generates smooth trajectories between waypoints using cubic Bézier curves. These paths are sampled into target points that are passed to the trajectory tracker.
 
 - **Path Following Control Task**  
-  Implements a pure pursuit controller to calculate the linear and angular velocity needed to reach the next target along the path. Converrts velocity command to   
-  directional PWM outputs.
+  Implements a pure pursuit controller to calculate the linear and angular velocity needed to reach the next target along the path. Converrts velocity command to   directional PWM outputs.
 
-- **Motor Output Task**
+- **Motor Output Task**  
   Receives PWM outputs from controller and applies them to the motors, adjusting motor speed and direction using an L298N motor driver.
 
 - **Communication Task (Planned)**  
