@@ -9,8 +9,7 @@ Upon completion of the first version, robo_frend will be able to navigate to a u
 - ✅ Real-time task coordination using FreeRTOS
 - ✅ IMU-based 2D state estimation
 - ✅ Cubic Bézier curve path planning
-- 🔄 Pure pursuit trajectory tracking *(in progress / tuning)*
-- 🔄 PD velocity control *(in progress / tuning)*
+- 🔄 Pure pursuit control *(in progress / tuning)*
 - Ultrasonic collision avoidance *(planned)*
 - MQTT communication for remote waypoint input *(planned)*
 
@@ -25,11 +24,12 @@ Each major function of the system—motion, sensing, communication, and control�
 - **Path Planning Task**  
   Generates smooth trajectories between waypoints using cubic Bézier curves. These paths are sampled into target points that are passed to the trajectory tracker.
 
-- **Trajectory Tracking Task**  
-  Implements a pure pursuit controller to calculate the linear and angular velocity needed to reach the next target along the path. A PD controller maps these target velocities to PWM motor commands.
+- **Path Following Control Task**  
+  Implements a pure pursuit controller to calculate the linear and angular velocity needed to reach the next target along the path. Converrts velocity command to   
+  directional PWM outputs.
 
-- **Motor Control Task**  
-  Converts velocity commands to directional PWM outputs, controlling motor speed and direction using an L298N motor driver.
+- **Motor Output Task**
+  Receives PWM outputs from controller and applies them to the motors, adjusting motor speed and direction using an L298N motor driver.
 
 - **Communication Task (Planned)**  
   Will handle MQTT-based communication with a base station, allowing remote waypoint commands to be sent to the robot over Wi-Fi.
