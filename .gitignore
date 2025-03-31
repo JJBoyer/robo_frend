@@ -1,4 +1,5 @@
 # Ignore build files
+build_log.txt
 build/
 *.o
 *.bin
