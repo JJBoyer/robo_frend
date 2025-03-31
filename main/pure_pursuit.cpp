@@ -2,7 +2,10 @@
 
 Filename: pure_pursuit.cpp
 Author: Jacob Boyer
-Description: 
+Description: The pure pursuit controller takes in the current
+state and the planned path, then uses those values to find a
+lookahead point along the path to produce motor outputs that
+steer the robot along its planned path.
 
 */
 
