@@ -16,13 +16,19 @@ navigation tasks.
 
 using namespace std;
 
+#define MPU6050_CONFIG_REGISTER 0x1A
+#define MPU6050_DLPF_MODE 0x03
+#define MPU_ADDRESS 0x68
+
 // Create IMU handle
 mpu6050_handle_t mpu_sensor = NULL;
 
 // Create IMU data variables
 mpu6050_acce_value_t accel;
+mpu6050_acce_value_t accelBias;
+float accelGain;
 mpu6050_gyro_value_t gyro;
-mpu6050_gyro_value_t gyro_bias;
+mpu6050_gyro_value_t gyroBias;
 
 /* init6050:
     Initializes and configures the MPU6050
@@ -42,10 +48,12 @@ void init6050(){
     scanBus(I2C_NUM_0);
     wakeIMU();
     vTaskDelay(pdMS_TO_TICKS(100));
+    setDLPF();
 
     // Measure bias on startup and test calibration on 
     // an initial measurement
     getGyroBias();
+    getAccelBias();
     measureAccel(mpu_sensor);
     measureGyro(mpu_sensor);
 
@@ -118,6 +126,28 @@ void wakeIMU(){
 
 }
 
+/* setDLPF:
+    Sets the digital low pass filter register to
+    control the MPU6050's internal filtering to
+    reduce noise.
+*/
+void setDLPF(){
+
+    uint8_t dlpf_config[2] = {MPU6050_CONFIG_REGISTER, MPU6050_DLPF_MODE};  // Config register and value
+
+    // Create command to set DLPF register
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (MPU_ADDRESS << 1) | I2C_MASTER_WRITE, true);
+    i2c_master_write(cmd, dlpf_config, 2, true);
+    i2c_master_stop(cmd);
+
+    // Send command
+    i2c_master_cmd_begin(I2C_NUM_0, cmd, pdMS_TO_TICKS(100));
+    i2c_cmd_link_delete(cmd);
+
+}
+
 /* getGyroBias:
     Takes 200 samples while the robot is
     stationary to measure bias in the gyro
@@ -143,9 +173,53 @@ void getGyroBias(){
     }
 
     // Update gyro_bias for use in calculations
-    gyro_bias.gyro_x = gyro_sum.gyro_x / samples;
-    gyro_bias.gyro_y = gyro_sum.gyro_y / samples;
-    gyro_bias.gyro_z = gyro_sum.gyro_z / samples;
+    gyroBias.gyro_x = gyro_sum.gyro_x / samples;
+    gyroBias.gyro_y = gyro_sum.gyro_y / samples;
+    gyroBias.gyro_z = gyro_sum.gyro_z / samples;
+
+}
+
+/* getAccelBias:
+    Takes 200 acceleration samples and finds the
+    magnitude of the total acceleration for each
+    sample. The average of the samples is computed
+    and saved as the gain of the readings.
+    The bias is also found after applying the gain.
+*/
+void getAccelBias(){
+
+    float accel_gain_sum = 0.0f;
+    mpu6050_acce_value_t accel_bias_sum = {0};
+    const int samples = 200;
+
+    // Collect samples to measure gain
+    for (int i = 0; i < samples; i++){
+        
+        mpu6050_acce_value_t a;
+        mpu6050_get_acce(mpu_sensor, &a);
+
+        accel_gain_sum += sqrtf(a.acce_x*a.acce_x + a.acce_y*a.acce_y + a.acce_z*a.acce_z);
+
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
+
+    accelGain = accel_gain_sum / samples;
+
+    for (int i = 0; i < samples; i++){
+
+        mpu6050_acce_value_t a;
+        mpu6050_get_acce(mpu_sensor, &a);
+
+        accel_bias_sum.acce_x += a.acce_x / accelGain;
+        accel_bias_sum.acce_y += a.acce_y / accelGain;
+        accel_bias_sum.acce_z += (a.acce_z / accelGain) - 1;
+
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
+
+    accelBias.acce_x = accel_bias_sum.acce_x / samples;
+    accelBias.acce_y = accel_bias_sum.acce_y / samples;
+    accelBias.acce_z = accel_bias_sum.acce_z / samples;
 
 }
 
@@ -160,7 +234,15 @@ void measureAccel(mpu6050_handle_t& mpu_sensor){
     // Collect accel data from IMU
     mpu6050_get_acce(mpu_sensor, &accel);
 
-    // Add calibration here if needed
+    // Remove gain from the values
+    accel.acce_x /= accelGain;
+    accel.acce_y /= accelGain;
+    accel.acce_z /= accelGain;
+
+    // Remove bias from the values
+    accel.acce_x -= accelBias.acce_x;
+    accel.acce_y -= accelBias.acce_y;
+    accel.acce_z -= accelBias.acce_z;
 
 }
 
@@ -168,7 +250,8 @@ void measureAccel(mpu6050_handle_t& mpu_sensor){
     Collects gyroscope data from the MPU6050
     and updates the gyro data variable after
     applying the necessary calibration for
-    more accurate data.
+    more accurate data. Provides measurements
+    in rad/s.
 */
 void measureGyro(mpu6050_handle_t& mpu_sensor){
 
@@ -176,10 +259,24 @@ void measureGyro(mpu6050_handle_t& mpu_sensor){
     mpu6050_get_gyro(mpu_sensor, &gyro);
 
     // Apply bias negation
-    gyro.gyro_x -= gyro_bias.gyro_x;
-    gyro.gyro_y -= gyro_bias.gyro_y;
-    gyro.gyro_z -= gyro_bias.gyro_z;
+    gyro.gyro_x -= gyroBias.gyro_x;
+    gyro.gyro_y -= gyroBias.gyro_y;
+    gyro.gyro_z -= gyroBias.gyro_z;
 
+    // Convert default degrees to radians for consistent computation
+    gyro.gyro_x *= deg_to_rad;
+    gyro.gyro_y *= deg_to_rad;
+    gyro.gyro_z *= deg_to_rad;
+
+}
+
+/* clampToZero:
+    A special clamp function that clamps a
+    known range of uncertainty in a sensor
+    to zero.
+*/
+float clampToZero(float value, float threshold){
+    return (fabs(value) < threshold) ? 0.0f : value;
 }
 
 /* estimateState:
@@ -212,21 +309,25 @@ void estimateState(mpu6050_handle_t& mpu_sensor){
         .acc  = 0
     };
 
-    // Set time step value in seconds for discrete integration
-    const float dt = 0.025;
+    // Calculate dt for this loop
+    static int64_t last_time = 0;
+    int64_t now = esp_timer_get_time();  // microseconds
+    float dt = (now - last_time) / 1e6;  // seconds
+    last_time = now;
 
     // Collect data for this timestep
     measureAccel(mpu_sensor);
     measureGyro(mpu_sensor);
 
     // Compute angular state estimation
-    this_state.w = gyro.gyro_z;
-    this_state.th = fmod(last_state.th + (last_state.w + this_state.w) * dt / 2, 360.0f);
+    this_state.w = clampToZero(gyro.gyro_z, 0.15f);
+    this_state.th = fmod(last_state.th + (last_state.w + this_state.w) * dt / 2, 2*M_PI);
+    if(this_state.th < 0) this_state.th += 2*M_PI; // Maintain positive heading value
 
     // Compute linear state estimation in 2D
-    this_state.acc = 9.81 * accel.acce_y;  // robot y-axis is forward
-    this_state.velX = last_state.velX + (last_state.acc * sin(last_state.th * deg_to_rad) + this_state.acc * sin(this_state.th * deg_to_rad)) * dt / 2;
-    this_state.velY = last_state.velY + (last_state.acc * cos(last_state.th * deg_to_rad) + this_state.acc * cos(this_state.th * deg_to_rad)) * dt / 2;
+    this_state.acc = clampToZero((9.81 * accel.acce_y), 0.05f);  // robot y-axis is forward
+    this_state.velX = last_state.velX + (last_state.acc * sin(last_state.th) + this_state.acc * sin(this_state.th)) * dt / 2;
+    this_state.velY = clampToZero((last_state.velY + (last_state.acc * cos(last_state.th) + this_state.acc * cos(this_state.th)) * dt / 2), 0.005f);
     this_state.posX = last_state.posX + (last_state.velX + this_state.velX) * dt / 2;
     this_state.posY = last_state.posY + (last_state.velY + this_state.velY) * dt / 2;
 
@@ -239,4 +340,13 @@ void estimateState(mpu6050_handle_t& mpu_sensor){
         *pstate = this_state;    
     }
 
+    static int log_counter = 0;
+    // Display test values
+    //printf("\033[2J\033[H");
+    if(++log_counter % 40 == 0){ // Print about once per second
+        printf("Accel Data: x = %.2f, y = %.2f, z = %.2f\n", accel.acce_x, accel.acce_y, accel.acce_z);
+        printf("Gyro Data: x = %.2f, y = %.2f, z = %.2f\n", gyro.gyro_x, gyro.gyro_y, gyro.gyro_z);
+        printf("[x, y, th, vx, vy, w, a, dt]\n");
+        printf("[%f, %f, %f, %f, %f, %f, %f, %f]\n", this_state.posX, this_state.posY, this_state.th, this_state.velX, this_state.velY, this_state.w, this_state.acc, dt);
+    }
 }
