@@ -58,12 +58,12 @@ void init6050(){
     measureGyro(mpu_sensor);
 
     // Display test values
-    printf("Accel Data: x = %.2f, y = %.2f, z = %.2f\n", accel.acce_x, accel.acce_y, accel.acce_z);
-    printf("Gyro Data: x = %.2f, y = %.2f, z = %.2f\n", gyro.gyro_x, gyro.gyro_y, gyro.gyro_z);
+    printf("Accel Data: x = %f, y = %f, z = %f\n", accel.acce_x, accel.acce_y, accel.acce_z);
+    printf("Gyro Data: x = %f, y = %f, z = %f\n", gyro.gyro_x, gyro.gyro_y, gyro.gyro_z);
     
 }
 
-/* scan_i2c_bus:
+/* scanBus:
     This utility function allows the ESP32
     to search for any devices on the I2C line
     to verify connection to said devices. The
@@ -347,6 +347,6 @@ void estimateState(mpu6050_handle_t& mpu_sensor){
         printf("Accel Data: x = %.2f, y = %.2f, z = %.2f\n", accel.acce_x, accel.acce_y, accel.acce_z);
         printf("Gyro Data: x = %.2f, y = %.2f, z = %.2f\n", gyro.gyro_x, gyro.gyro_y, gyro.gyro_z);
         printf("[x, y, th, vx, vy, w, a, dt]\n");
-        printf("[%f, %f, %f, %f, %f, %f, %f, %f]\n", this_state.posX, this_state.posY, this_state.th, this_state.velX, this_state.velY, this_state.w, this_state.acc, dt);
+        printf("[%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]\n", this_state.posX, this_state.posY, this_state.th, this_state.velX, this_state.velY, this_state.w, this_state.acc, dt);
     }
 }

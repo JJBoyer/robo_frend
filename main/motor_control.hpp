@@ -23,8 +23,8 @@ void forward();
 #define RIGHT_PWM_PIN GPIO_NUM_42  // Connects to ENB on driver
 
 // Define motor direction hardware pins
-#define LEFT_FORWARD GPIO_NUM_7   // Connects to IN1 on driver
-#define LEFT_REVERSE GPIO_NUM_6   // Connects to IN2 on driver
+#define LEFT_FORWARD GPIO_NUM_6   // Connects to IN1 on driver
+#define LEFT_REVERSE GPIO_NUM_7   // Connects to IN2 on driver
 #define RIGHT_REVERSE GPIO_NUM_5  // Connects to IN3 on driver
 #define RIGHT_FORWARD GPIO_NUM_4  // Connects to IN4 on driver
 

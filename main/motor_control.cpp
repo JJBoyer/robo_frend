@@ -20,7 +20,7 @@ using namespace std;
 
 motorOut_t motorPWM = {
     .left = 0,
-    .right = 0
+    .right = 0,
 };
 
 /* initMotors:
@@ -166,8 +166,8 @@ void forward(){
     }
 
     // Set motors full speed
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, motorPWM.left);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR, motorPWM.right);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, MOTOR_HIGH);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR, MOTOR_HIGH);
 
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR);

@@ -30,8 +30,8 @@ SemaphoreHandle_t wayMutex   = nullptr;
 SemaphoreHandle_t pathMutex  = nullptr;
 
 // Define constant system parameters
-const float velocityTarget = 0.2;
-const float wheelBaseWidth = 0.15;
+const float velocityTarget = 0.2f;
+const float wheelBaseWidth = 0.15f;
 
 void initGlobals() {
 
