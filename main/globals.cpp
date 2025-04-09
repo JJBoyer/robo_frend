@@ -9,11 +9,14 @@ once in this file and included in all files that use it.
 */
 
 #include "globals.hpp"
-#include "esp_log.h"
 #include <stdlib.h>
+#include "esp_log.h"
 #include "mutex_guard.hpp"
 
 using namespace std;
+
+// Allocate status bitset memory
+bitset<FLAG_COUNT> status;
 
 // Allocate global pointer memory
 unique_ptr<motorOut_t> pduty = nullptr;
@@ -47,26 +50,42 @@ void initGlobals() {
     { // dutyMutex
         MutexGuard lock(dutyMutex);
         pduty.reset(new motorOut_t{0, 0});
+        if(pduty == nullptr){
+            return;
+        }
     }
 
     { // stateMutex
         MutexGuard lock(stateMutex);
         pstate.reset(new state_t({0, 0, 0, 0, 0, 0, 0}));
+        if(pstate == nullptr){
+            return;
+        }
     }
 
     { // distMutex
         MutexGuard lock(distMutex);
         pdist.reset(new double(0.0));
+        if(pdist == nullptr){
+            return;
+        }
     }
 
     { // wayMutex
         MutexGuard lock(wayMutex);
         pway.reset(new queue<Pose2D_t>());
+        if(pway == nullptr){
+            return;
+        }
     }
 
     { // pathMutex
         MutexGuard lock(pathMutex);
         ppath.reset(new vector<pathPoint_t>());
+        if(ppath == nullptr){
+            return;
+        }
     }
 
+    status.set(GLOBALS);
 }

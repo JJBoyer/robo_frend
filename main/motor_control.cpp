@@ -140,6 +140,8 @@ void initMotors(){  // Initialize the motor control pins
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR);
 
+    // Report successful initialization
+    status.set(MOTORS);
 }
 
 /* forward:

@@ -15,6 +15,7 @@ the autonomy stack.
 #include <memory>
 #include <vector>
 #include <queue>
+#include <bitset>
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
@@ -54,6 +55,20 @@ typedef struct {
     int left;
     int right;
 } motorOut_t;
+
+// Declare an enum for use in status bitset
+enum status_labels {
+    GLOBALS,
+    ULTRASONIC,
+    MPU6050,
+    ENCODERS,
+    MOTORS,
+    TASKS,
+    FLAG_COUNT
+};
+
+// Declare a bitset for status tracking
+extern std::bitset<FLAG_COUNT> status;
 
 // Declare external global pointers for thread communication
 extern std::unique_ptr<motorOut_t> pduty;

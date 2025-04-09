@@ -15,11 +15,11 @@ volatile bool meas_left_vel = false;
 volatile bool meas_right_vel = false;
 
 odometry_t wheel = {
-    .time = 0;
+    .time = 0,
     .left = 0.0f,
     .right = 0.0f,
-    .avg = 0.0f;
-    .w = 0.0f;
+    .avg = 0.0f,
+    .w = 0.0f
 };
 
 void IRAM_ATTR left_isr_handler(void* arg){
@@ -69,8 +69,11 @@ void initEncoders(){
     esp_err_t left_isr_error = gpio_isr_handler_add(LEFT_A, left_isr_handler, NULL);
     if(left_isr_error != ESP_OK){
         printf("Error: ISR Not Attached. Code: %d\n", left_isr_error);
+        return;
     }
 
+    // Report successful initialization
+    status.set(ENCODERS);
 }
 
 void measVelocity(){

@@ -50,7 +50,7 @@ void getStatus(){
     // Print Status to Serial Monitor
 
     // Clear monitor and set cursor to top-left
-    printf("\033[2J\033[H");
+    /*printf("\033[2J\033[H");
 
     printf("--Sensor Input--\n");
     printf("Potentiometer Mode: Brightness\n");
@@ -61,5 +61,5 @@ void getStatus(){
     printf("Acceleration: %lf m/s^2\n", accel);
     printf("Left Duty Cycle: %d\n", duty.left);
     printf("Right Duty Cycle: %d\n", duty.right);
-
+    */
 }

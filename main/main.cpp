@@ -25,6 +25,7 @@ Description: Main loop for Robo Frend
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "tasks.hpp"
+#include "task_manager.hpp"
 #include "motor_control.hpp"
 #include "sensor_control.hpp"
 #include "globals.hpp"
@@ -43,5 +44,8 @@ extern "C" void app_main() {
 
     // Start task threads
     initTasks();
+
+    // Readout system status
+    printTaskStatus();
 
 }

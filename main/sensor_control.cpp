@@ -12,6 +12,7 @@ data for position extrapolation.
 #include "driver/i2c.h"
 #include "esp_log.h"
 #include "sensor_control.hpp"
+#include "encoder.hpp"
 #include "imu.hpp"
 #include "mutex_guard.hpp"
 
@@ -49,6 +50,7 @@ void initSensors(){
     initI2C();
     initSR04();
     init6050();
+    initEncoders();
 
 }
 
@@ -79,8 +81,10 @@ void initSR04(){
     esp_err_t isr_error = gpio_isr_handler_add(ECHO, echo_isr_handler, NULL);
     if(isr_error != ESP_OK){
         printf("Error: ISR Not Attached. Code: %d\n", isr_error);
+        return;
     }
 
+    status.set(ULTRASONIC);
 }
 
 /* initI2C:

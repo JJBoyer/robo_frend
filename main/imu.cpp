@@ -50,17 +50,12 @@ void init6050(){
     vTaskDelay(pdMS_TO_TICKS(100));
     setDLPF();
 
-    // Measure bias on startup and test calibration on 
-    // an initial measurement
+    // Calibrate sensors on startup
     getGyroBias();
     getAccelBias();
-    measureAccel(mpu_sensor);
-    measureGyro(mpu_sensor);
 
-    // Display test values
-    printf("Accel Data: x = %f, y = %f, z = %f\n", accel.acce_x, accel.acce_y, accel.acce_z);
-    printf("Gyro Data: x = %f, y = %f, z = %f\n", gyro.gyro_x, gyro.gyro_y, gyro.gyro_z);
-    
+    // Report successful initialization
+    status.set(MPU6050);
 }
 
 /* scanBus:
