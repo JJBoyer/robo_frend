@@ -2,15 +2,18 @@
 
 Filename: encoder.cpp
 Author: Jacob Boyer
-Description:
+Description: Initializes and reads the motor
+encoders for use in sensor fusion and state
+estimation.
 
 */
 
 #include "esp_log.h"
 #include "encoder.hpp"
+#include "mutex_guard.hpp"
 
 volatile int64_t now = 0;
-int64_t past = 0;
+volatile int64_t past = 0;
 volatile bool meas_left_vel = false;
 volatile bool meas_right_vel = false;
 
@@ -22,16 +25,23 @@ odometry_t wheel = {
     .w = 0.0f
 };
 
+// ISR handler for left motor encoder
 void IRAM_ATTR left_isr_handler(void* arg){
+    past = now;
     now = esp_timer_get_time();
     meas_left_vel = true;
 };
 
+// ISR handler for right motor encoder
 void IRAM_ATTR right_isr_handler(void* arg){
+    past = now;
     now = esp_timer_get_time();
     meas_right_vel = true;
 };
 
+/* initEncoders:
+    Configures and initializes the motor encoders.
+*/
 void initEncoders(){
 
     // Config left encoder interrupt pin
@@ -76,29 +86,38 @@ void initEncoders(){
     status.set(ENCODERS);
 }
 
+/* measureVelocity:
+    When either encoder interrupt is triggered, take the time
+    step and calculate the speed for that encoder's wheel
+*/
 void measureVelocity(){
 
     // Calculate time step
-    int dt = now - past;
-    wheel.time = now;
-    past = now;
-    
-    // Calculate wheel velocity
-    float vWheel = 0.00883f / dt;
+    if(meas_left_vel || meas_right_vel){
+        int dt = now - past;
+        wheel.time = now;
 
-    // Lower flag and save velocity
-    if(meas_left_vel){
-        meas_left_vel = false;
-        wheel.left = vWheel;
-    } else if(meas_right_vel){
-        meas_right_vel = false;
-        wheel.right = vWheel;
+        // Calculate wheel velocity
+        float vWheel = 0.00883f / dt;
+
+        // Lower flag and save velocity
+        {
+            MutexGuard lock(wheelMutex);
+
+            if(meas_left_vel){
+                meas_left_vel = false;
+                wheel.left = vWheel;
+            } else if(meas_right_vel){
+                meas_right_vel = false;
+                wheel.right = vWheel;
+            }
+
+            // Average wheel velocities to find robot velocity
+            wheel.avg = (wheel.right + wheel.left) / 2;
+
+            // Calculate angular velocity (RH)
+            wheel.w = (wheel.right - wheel.left) / wheelBaseWidth;
+
+        }
     }
-
-    // Average wheel velocities to find robot velocity
-    wheel.avg = (wheel.right + wheel.left) / 2;
-
-    // Calculate angular velocity (RH)
-    wheel.w = (wheel.right - wheel.left) / wheelBaseWidth;
-
 }

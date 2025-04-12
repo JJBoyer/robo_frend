@@ -21,6 +21,7 @@ the various robot operations at fixed intervals
 */
 void motorTask(void* pvParameters);
 void ultrasonicTask(void* pvParameters);
+void encoderTask(void* pvParameters);
 void estimateStateTask(void* pvParameters);
 void sendTelemetryTask(void* pvParameters);
 

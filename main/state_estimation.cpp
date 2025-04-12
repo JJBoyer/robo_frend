@@ -51,7 +51,6 @@ void estimateState(mpu6050_handle_t& mpu_sensor){
     // Collect data for this timestep
     measureAccel(mpu_sensor);
     measureGyro(mpu_sensor);
-    measureVelocity();
 
     // Apply Kalman filter to estimate the current state
     kalman(current, past, dt);
@@ -118,7 +117,10 @@ void kalman(state_t& current, state_t& past, float& dt){
 
     // Measurement vector
     static Eigen::Matrix<float, 3, 1> Z = Eigen::Matrix<float, 3, 1>::Zero();  // Measurement vector
-    Z << wheel.avg * cos(past.th), wheel.avg * sin(past.th), gyro.gyro_z;
+    {
+        MutexGuard lock(wheelMutex);
+        Z << (*pwheel).avg * cos(past.th), (*pwheel).avg * sin(past.th), gyro.gyro_z;
+    }
 
     // Identity matrix
     Eigen::Matrix<float, 7, 7> I = Eigen::Matrix<float, 7, 7>::Identity();

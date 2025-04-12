@@ -1,6 +1,10 @@
 /*
 
-
+Filename: comms.cpp
+Author: Jacob Boyer
+Description: Contains functions for the initialization
+and use of Wi-Fi and MQTT connections for transmitting
+telemetry to the base station.
 
 */
 
@@ -11,6 +15,9 @@ using namespace std;
 
 esp_mqtt_client_handle_t client = NULL;
 
+/* initWifiSta:
+    Defines wifi config and connects to the desired wifi network.
+*/
 void initWifiSta(){
     esp_netif_init();
     esp_event_loop_create_default();
@@ -29,6 +36,10 @@ void initWifiSta(){
     esp_wifi_connect();
 }
 
+/* mqttEventHandler:
+    Receives event ids from the mqtt protocol and
+    prints status updates.
+*/
 void mqttEventHandler(void* handler_args, esp_event_base_t base, int32_t event_id, void* event_data) {
     switch ((esp_mqtt_event_id_t)event_id) {
         case MQTT_EVENT_CONNECTED:
@@ -42,6 +53,10 @@ void mqttEventHandler(void* handler_args, esp_event_base_t base, int32_t event_i
     }
 }
 
+/* mqttStart:
+    Defines the mqtt config and starts the client
+    to connect with the broker.
+*/
 void mqttStart(const char* broker_ip){
     
     char uri[64];
@@ -55,12 +70,20 @@ void mqttStart(const char* broker_ip){
     esp_mqtt_client_start(client);
 }
 
+/* mqttPublishTelemetry:
+    Takes in a payload packet and casts it to a c-string
+    for transmission to the "robot/telemetry" topic.
+*/
 void mqttPublishTelemetry(void* payload, size_t len){
     if(client){
         esp_mqtt_client_publish(client, "robot/telemetry", (const char*)payload, len, 1, 0);
     }
 }
 
+/* initComms:
+    Runs all initialization commands necessary for
+    establishing Wi-Fi and MQTT connections
+*/
 void initComms(){
     nvs_flash_init();
     initWifiSta();

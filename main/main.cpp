@@ -2,23 +2,12 @@
 
 Project Name: Robo Frend
 Description: An ESP32-based, dual-motor robot 
-designed to accept a variety of attachments for 
-use around an indoor space
+designed to autonomously navigate increasingly
+complex environments.
 
 Filename: main.cpp
 Author: Jacob Boyer
 Description: Main loop for Robo Frend
-
-*/
-
-/* Project #include Standard
-  
-  The project standard for
-  include order is as follows:
-
-  - C/C++ Standard Libraries
-  - ESP-IDF Libraries
-  - Project Header Files
 
 */
 

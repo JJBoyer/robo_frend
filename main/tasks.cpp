@@ -58,6 +58,24 @@ void ultrasonicTask(void* pvParameters){
     }
 }
 
+/* encoderTask:
+    Simple task to run the measureVelocity function, which
+    measures the motor speed from the encoders on either wheel.
+
+    CPU Core: 0
+    Task Frequency: 10Hz
+*/
+void encoderTask(void* pvParameters){
+
+    TickType_t xLastWakeTime = xTaskGetTickCount();  // Initialize last wake time
+    const TickType_t xFrequency = pdMS_TO_TICKS(100); // Set task frquency to 10Hz
+
+    while(true){
+        measureVelocity();
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);  // Wait until 100ms has passed from task start
+    }
+}
+
 /* estimateStateTask:
     Simple task designed to run the estimateState() function, 
     which reads accelerometer and gyro data from the MPU6050 
@@ -78,10 +96,10 @@ void estimateStateTask(void* pvParameters){
     }
 }
 
-/* getStatusTask:
-  Simple task designed to run the getStatus()
-  function, which writes any data desired for
-  tuning or debugging to the Serial Monitor
+/* sendTelemetryTask:
+  Simple task designed to run the sendTelemetry()
+  function, which compiles system data and transmits
+  it to the base station via MQTT protocol.
 
   CPU Core: 0
   Task Frequency: 0.2 Hz

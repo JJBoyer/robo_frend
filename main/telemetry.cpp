@@ -13,10 +13,9 @@ a telemetry struct and transmits it to the base station
 
 using namespace std;
 
-/* getStatus:
-  Collects data necessary to provide the desired
-  feedback, then outputs the information to the
-  serial monitor.
+/* sendTelemetry:
+  Collects telemetry data from the global pointers
+  and transmits them to the base station.
 */
 void sendTelemetry(){
 

@@ -16,6 +16,7 @@ using namespace std;
 // Initialize task handles
 TaskHandle_t motorHandle = NULL;
 TaskHandle_t sonicHandle = NULL;
+TaskHandle_t encoderHandle = NULL;
 TaskHandle_t estimateHandle = NULL;
 TaskHandle_t teleHandle = NULL;
 
@@ -41,9 +42,16 @@ void initTasks(){
         return;
     }
 
-    // Initialize FreeRTOS task for using MPU6050 to estimate robot state
-    BaseType_t result2 = xTaskCreatePinnedToCore(estimateStateTask, "StateEstimator", 4096, mpu_sensor, 4, &estimateHandle, 0);
+    // Initialize FreeRTOS task for reading encoders to estimate robot state
+    BaseType_t result2 = xTaskCreatePinnedToCore(encoderTask, "Encoders", 4096, NULL, 3, &encoderHandle, 0);
     if(result2 != pdPASS){
+        printf("\nTask creation failed!\nTask: Encoders\nCPU: 0\n\n");
+        return;
+    }
+
+    // Initialize FreeRTOS task for using MPU6050 to estimate robot state
+    BaseType_t result3 = xTaskCreatePinnedToCore(estimateStateTask, "StateEstimator", 4096, mpu_sensor, 4, &estimateHandle, 0);
+    if(result3 != pdPASS){
         printf("\nTask creation failed!\nTask: StateEstimator\nCPU: 0\n\n");
         return;
     }

@@ -41,7 +41,7 @@ typedef struct {
 } Pose2D_t;
 
 // Declare a pathPoint_t struct for use in the path vector
-struct pathPoint_t {
+struct pathPoint_t{
     float x;
     float y;
 
@@ -55,6 +55,15 @@ typedef struct {
     int left;
     int right;
 } motorOut_t;
+
+// Define a new odometry struct for measuring encoder values
+typedef struct {
+    int64_t time;
+    float left;
+    float right;
+    float avg;
+    float w;
+} odometry_t;
 
 // Declare an enum for use in status bitset
 enum status_labels {
@@ -73,6 +82,7 @@ extern std::bitset<FLAG_COUNT> status;
 // Declare external global pointers for thread communication
 extern std::unique_ptr<motorOut_t> pduty;
 extern std::unique_ptr<double> pdist;
+extern std::unique_ptr<odometry_t> pwheel;
 extern std::unique_ptr<state_t> pstate;
 extern std::unique_ptr<std::queue<Pose2D_t>> pwaypt;
 extern std::unique_ptr<std::vector<pathPoint_t>> ppath;
@@ -80,6 +90,7 @@ extern std::unique_ptr<std::vector<pathPoint_t>> ppath;
 // Declare external mutexes to access global pointers
 extern SemaphoreHandle_t dutyMutex;
 extern SemaphoreHandle_t distMutex;
+extern SemaphoreHandle_t wheelMutex;
 extern SemaphoreHandle_t stateMutex;
 extern SemaphoreHandle_t wayMutex;
 extern SemaphoreHandle_t pathMutex;

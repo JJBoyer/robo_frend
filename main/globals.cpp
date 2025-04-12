@@ -21,6 +21,7 @@ bitset<FLAG_COUNT> status;
 // Allocate global pointer memory
 unique_ptr<motorOut_t> pduty = nullptr;
 unique_ptr<double> pdist = nullptr;
+unique_ptr<odometry_t> pwheel = nullptr;
 unique_ptr<state_t> pstate = nullptr;
 unique_ptr<queue<Pose2D_t>> pway = nullptr;
 unique_ptr<vector<pathPoint_t>> ppath = nullptr;
@@ -28,6 +29,7 @@ unique_ptr<vector<pathPoint_t>> ppath = nullptr;
 // Allocate memory for mutexes
 SemaphoreHandle_t dutyMutex  = nullptr;
 SemaphoreHandle_t distMutex  = nullptr;
+SemaphoreHandle_t wheelMutex = nullptr;
 SemaphoreHandle_t stateMutex = nullptr;
 SemaphoreHandle_t wayMutex   = nullptr;
 SemaphoreHandle_t pathMutex  = nullptr;
@@ -41,6 +43,7 @@ void initGlobals() {
     // Initialize mutexes for pointer locking
     dutyMutex  = xSemaphoreCreateMutex();
     distMutex  = xSemaphoreCreateMutex();
+    wheelMutex = xSemaphoreCreateMutex();
     stateMutex = xSemaphoreCreateMutex();
     wayMutex   = xSemaphoreCreateMutex();
     pathMutex  = xSemaphoreCreateMutex();
@@ -57,8 +60,16 @@ void initGlobals() {
 
     { // stateMutex
         MutexGuard lock(stateMutex);
-        pstate.reset(new state_t({0, 0, 0, 0, 0, 0, 0}));
+        pstate.reset(new state_t({0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}));
         if(pstate == nullptr){
+            return;
+        }
+    }
+
+    { // wheelMutex
+        MutexGuard lock(wheelMutex);
+        pwheel.reset(new odometry_t({0, 0.0f, 0.0f, 0.0f, 0.0f}));
+        if(pwheel == nullptr){
             return;
         }
     }

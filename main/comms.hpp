@@ -1,6 +1,8 @@
 /*
 
-
+Filename: comms.hpp
+Author: Jacob Boyer
+Description: Header file for comms.cpp
 
 */
 

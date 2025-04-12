@@ -18,6 +18,7 @@ Description: Header file for task_manager.cpp
 // Declare task handles for task management
 extern TaskHandle_t motorHandle;
 extern TaskHandle_t sonicHandle;
+extern TaskHandle_t encoderHandle;
 extern TaskHandle_t estimateHandle;
 extern TaskHandle_t teleHandle;
 

@@ -12,7 +12,7 @@ Description: Header file for telemetry.hpp
 #include "globals.hpp"
 #include "comms.hpp"
 
-// Function to display desired debugging data
+// Function to transmit data to the base station
 void sendTelemetry();
 
 #endif
