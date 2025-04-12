@@ -29,6 +29,7 @@ Description: Main loop for Robo Frend
 #include "motor_control.hpp"
 #include "sensor_control.hpp"
 #include "globals.hpp"
+#include "comms.hpp"
 
 using namespace std;
 
@@ -37,6 +38,9 @@ extern "C" void app_main() {
 
     // Initialize global assets
     initGlobals();
+
+    // Initialize communication utilities
+    initComms();
 
     // Initialize peripherals
     initSensors();

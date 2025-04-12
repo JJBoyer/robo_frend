@@ -1,8 +1,8 @@
 /*
 
-Filename: status.hpp
+Filename: telemetry.hpp
 Author: Jacob Boyer
-Description: Header file for status.hpp
+Description: Header file for telemetry.hpp
 
 */
 
@@ -10,8 +10,9 @@ Description: Header file for status.hpp
 #define STATUS_HPP
 
 #include "globals.hpp"
+#include "comms.hpp"
 
 // Function to display desired debugging data
-void getStatus();
+void sendTelemetry();
 
 #endif

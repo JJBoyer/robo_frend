@@ -19,7 +19,7 @@ Description: Header file for task_manager.cpp
 extern TaskHandle_t motorHandle;
 extern TaskHandle_t sonicHandle;
 extern TaskHandle_t estimateHandle;
-extern TaskHandle_t statHandle;
+extern TaskHandle_t teleHandle;
 
 // Task initialization function
 void initTasks();

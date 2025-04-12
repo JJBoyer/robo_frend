@@ -17,7 +17,7 @@ using namespace std;
 TaskHandle_t motorHandle = NULL;
 TaskHandle_t sonicHandle = NULL;
 TaskHandle_t estimateHandle = NULL;
-TaskHandle_t statHandle = NULL;
+TaskHandle_t teleHandle = NULL;
 
 /* Task CPU Core Assignments:
     Motor runs on Core 1 at 10Hz
@@ -49,7 +49,7 @@ void initTasks(){
     }
 
     // Initialize FreeRTOS task for printing to the Serial Monitor
-    BaseType_t resultn = xTaskCreatePinnedToCore(getStatusTask, "GetStatus", 4096, NULL, 4, &statHandle, 0);
+    BaseType_t resultn = xTaskCreatePinnedToCore(sendTelemetryTask, "SendTelemetry", 4096, NULL, 4, &teleHandle, 0);
     if(resultn != pdPASS){
         printf("\nTask creation failed!\nTask: GetStatus\nCPU: 0");
         return;
@@ -103,7 +103,7 @@ void printTaskStatus(){
     if(estimateHandle != NULL){
         printf("StateEstimator remaining stack: %d words\n", uxTaskGetStackHighWaterMark(estimateHandle));
     } 
-    if(statHandle != NULL){
-        printf("GetStatus remaining stack: %d words\n\n", uxTaskGetStackHighWaterMark(statHandle));
+    if(teleHandle != NULL){
+        printf("SendTelemetry remaining stack: %d words\n\n", uxTaskGetStackHighWaterMark(teleHandle));
     }
 }

@@ -90,4 +90,6 @@ extern const float wheelBaseWidth;
 
 void initGlobals();
 
+#define BROKER_IP "192.168.50.177"
+
 #endif

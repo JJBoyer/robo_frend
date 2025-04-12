@@ -76,7 +76,7 @@ void initEncoders(){
     status.set(ENCODERS);
 }
 
-void measVelocity(){
+void measureVelocity(){
 
     // Calculate time step
     int dt = now - past;

@@ -86,13 +86,13 @@ void estimateStateTask(void* pvParameters){
   CPU Core: 0
   Task Frequency: 0.2 Hz
 */
-void getStatusTask(void* pvParameters){
+void sendTelemetryTask(void* pvParameters){
 
     TickType_t xLastWakeTime = xTaskGetTickCount();    // Initialize last wake time
     const TickType_t xFrequency = pdMS_TO_TICKS(5000); // Set task frequency to 0.2Hz
 
     while(true){
-        getStatus();
+        sendTelemetry();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);   // Wait until 5s has passed from task start
     }
 }

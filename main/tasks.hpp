@@ -12,8 +12,8 @@ Description: Header file for tasks.cpp
 #include "freertos/FreeRTOS.h"
 #include "motor_control.hpp"
 #include "sensor_control.hpp"
-#include "status.hpp"
-#include "imu.hpp"
+#include "telemetry.hpp"
+#include "state_estimation.hpp"
 
 /*
 Declare functions for tasks designed to run
@@ -22,6 +22,6 @@ the various robot operations at fixed intervals
 void motorTask(void* pvParameters);
 void ultrasonicTask(void* pvParameters);
 void estimateStateTask(void* pvParameters);
-void getStatusTask(void* pvParameters);
+void sendTelemetryTask(void* pvParameters);
 
 #endif

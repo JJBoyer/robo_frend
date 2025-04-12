@@ -14,7 +14,10 @@ Description: Header file for imu.cpp
 #include "esp_timer.h"
 #include "globals.hpp"
 
+// Declare extern variables to reference IMU data
 extern mpu6050_handle_t mpu_sensor;
+extern mpu6050_acce_value_t accel;
+extern mpu6050_gyro_value_t gyro;
 
 // Function to initialize the MPU6050 IMU
 void init6050();
