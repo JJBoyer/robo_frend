@@ -26,9 +26,6 @@ motorOut_t duty = {
 state_t state;
 vector<pathPoint_t> path;
 
-// Define lookahead distance
-float lookaheadDist = 0.25f;
-
 // Flag for whether the path has been imported for pure pursuit
 bool pathMapped = false;
 
@@ -85,7 +82,8 @@ void purePursuitControl(){
     getState();
 
     // Find the lookahead point and curvature for next command
-    pathPoint_t lookahead = findLookaheadPoint(state, path, lookaheadDist);
+    pathPoint_t lookahead = findLookaheadPoint(state, path, lookAheadDist);
+    //printf("Lookahead X: %f\nLookahead Y: %f\n", lookahead.x, lookahead.y);
     float curvature = computeCurvature(state, lookahead);
 
     // Calculate next command
@@ -107,6 +105,9 @@ void purePursuitControl(){
 */
 pathPoint_t findLookaheadPoint(const state_t& state, const std::vector<pathPoint_t>& path, float L){
 
+    // Define fallback point
+    pathPoint_t fallback = {state.posX, state.posY};
+
     // Check path vector for the nearest point beyond the lookahead distance
     for(const auto& pt : path){
 
@@ -119,6 +120,7 @@ pathPoint_t findLookaheadPoint(const state_t& state, const std::vector<pathPoint
         }
     }
     // If no point is beyond the lookahead distance, return the final point in the path vector
+    if(path.empty()) return fallback;
     return path.back();
 }
 
@@ -135,14 +137,17 @@ float computeCurvature(const state_t& state, const pathPoint_t& lookahead){
 
     // Use the current heading and deltas to transform the lookahead point into the robot frame from world frame
     float heading = state.th;
-    float localX = cos(-heading * deg_to_rad) * dx - sin(-heading * deg_to_rad) * dy;
-    float localY = sin(-heading * deg_to_rad) * dx + cos(-heading * deg_to_rad) * dy;
+    float localX = cos(-heading * deg_to_rad) * dx + sin(-heading * deg_to_rad) * dy;
+    float localY = -sin(-heading * deg_to_rad) * dx + cos(-heading * deg_to_rad) * dy;
 
     // Avoid cases that would divide by zero
     if(localY == 0) return 0;
 
+    float curvature = 2 * localX / (localX * localX + localY * localY);
+    printf("Heading: %f", heading);
+
     // Apply the pure pursuit formula to return the curvature for control
-    return 2 * localX / (localX * localX + localY * localY);
+    return curvature;
 }
 
 /* mapVelocityToPWM:

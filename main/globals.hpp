@@ -98,9 +98,9 @@ extern SemaphoreHandle_t pathMutex;
 // Declare system parameters
 extern const float velocityTarget;
 extern const float wheelBaseWidth;
+extern const float lookAheadDist;
+extern const float pathPointCount;
 
 void initGlobals();
-
-#define BROKER_IP "192.168.50.177"
 
 #endif

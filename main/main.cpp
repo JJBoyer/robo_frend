@@ -19,6 +19,7 @@ Description: Main loop for Robo Frend
 #include "sensor_control.hpp"
 #include "globals.hpp"
 #include "comms.hpp"
+#include "path_planner.hpp"
 
 using namespace std;
 
@@ -29,11 +30,14 @@ extern "C" void app_main() {
     initGlobals();
 
     // Initialize communication utilities
-    initComms();
-
+    // initComms(); // temporarily deactivated
+    
     // Initialize peripherals
     initSensors();
     initMotors();
+
+    // Generate path
+    initPath();
 
     // Start task threads
     initTasks();

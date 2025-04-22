@@ -87,5 +87,5 @@ void mqttPublishTelemetry(void* payload, size_t len){
 void initComms(){
     nvs_flash_init();
     initWifiSta();
-    mqttStart(BROKER_IP);
+    mqttStart("192.168.50.117");
 }

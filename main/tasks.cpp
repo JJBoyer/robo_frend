@@ -92,7 +92,21 @@ void estimateStateTask(void* pvParameters){
 
     while(true){
         estimateState(mpu_sensor);
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);  // Wait until 25ms has passed from task start
+        vTaskDelayUntil(&xLastWakeTime, xFrequency); // Wait until 25ms has passed from task start
+    }
+}
+
+/* purePursuitControlTask:
+
+*/
+void purePursuitControlTask(void* pvParameters){
+
+    TickType_t xLastWakeTime = xTaskGetTickCount();  // Initialize last wake time
+    const TickType_t xFrequency = pdMS_TO_TICKS(25); // Set task frequency to 40 Hz
+
+    while(true){
+        purePursuitControl();
+        vTaskDelayUntil(&xLastWakeTime, xFrequency); // Wait until 25ms has passed from task start
     }
 }
 

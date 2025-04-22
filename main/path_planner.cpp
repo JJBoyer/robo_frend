@@ -113,6 +113,15 @@ void generateBezierPath(const Pose2D_t& start, const Pose2D_t target, float d, i
     }
 }
 
+/* initPath:
+    Simple function to call generateBezierCurve on startup.
+*/
+void initPath(){
+    getStart();
+    getTarget();
+    generateBezierPath(start, target, lookAheadDist, pathPointCount);
+}
+
 /* bezierPoint:
     Takes in the control points and path progress variable,
     then applies the cubic Bezier curve equation for that point.

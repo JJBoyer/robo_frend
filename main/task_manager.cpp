@@ -18,6 +18,7 @@ TaskHandle_t motorHandle = NULL;
 TaskHandle_t sonicHandle = NULL;
 TaskHandle_t encoderHandle = NULL;
 TaskHandle_t estimateHandle = NULL;
+TaskHandle_t pursuitHandle = NULL;
 TaskHandle_t teleHandle = NULL;
 
 /* Task CPU Core Assignments:
@@ -35,12 +36,13 @@ void initTasks(){
         return;
     }
 
+    // Temporarily deactivated
     // Initialize FreeRTOS task for measuring distance with the HC-SR04 ultrasonic sensor
-    BaseType_t result1 = xTaskCreatePinnedToCore(ultrasonicTask, "Ultrasonic", 4096, NULL, 3, &sonicHandle, 0);
+    /*BaseType_t result1 = xTaskCreatePinnedToCore(ultrasonicTask, "Ultrasonic", 4096, NULL, 3, &sonicHandle, 0);
     if(result1 != pdPASS){
         printf("\nTask creation failed!\nTask: Ultrasonic\nCPU: 0\n\n");
         return;
-    }
+    }*/
 
     // Initialize FreeRTOS task for reading encoders to estimate robot state
     BaseType_t result2 = xTaskCreatePinnedToCore(encoderTask, "Encoders", 4096, NULL, 3, &encoderHandle, 0);
@@ -50,18 +52,26 @@ void initTasks(){
     }
 
     // Initialize FreeRTOS task for using MPU6050 to estimate robot state
-    BaseType_t result3 = xTaskCreatePinnedToCore(estimateStateTask, "StateEstimator", 4096, mpu_sensor, 4, &estimateHandle, 0);
+    BaseType_t result3 = xTaskCreatePinnedToCore(estimateStateTask, "StateEstimator", 8192, mpu_sensor, 4, &estimateHandle, 0);
     if(result3 != pdPASS){
         printf("\nTask creation failed!\nTask: StateEstimator\nCPU: 0\n\n");
         return;
     }
 
+    // Initialize FreeRTOS task for pure pursuit motor control
+    BaseType_t result4 = xTaskCreatePinnedToCore(purePursuitControlTask, "PurePursuit", 8192, NULL, 1, &pursuitHandle, 0);
+    if(result4 != pdPASS){
+        printf("\nTask creation failed!\nTask: PurePursuit\nCPU: 0\n\n");
+        return;
+    }
+
+    // Temporarily deactivated
     // Initialize FreeRTOS task for printing to the Serial Monitor
-    BaseType_t resultn = xTaskCreatePinnedToCore(sendTelemetryTask, "SendTelemetry", 4096, NULL, 4, &teleHandle, 0);
+    /*BaseType_t resultn = xTaskCreatePinnedToCore(sendTelemetryTask, "SendTelemetry", 4096, NULL, 4, &teleHandle, 0);
     if(resultn != pdPASS){
         printf("\nTask creation failed!\nTask: GetStatus\nCPU: 0");
         return;
-    }
+    }*/
 
     // Report successful initialization
     status.set(TASKS);
@@ -108,9 +118,15 @@ void printTaskStatus(){
     if(sonicHandle != NULL){
         printf("Ultrasonic remaining stack: %d words\n", uxTaskGetStackHighWaterMark(sonicHandle));
     }
+    if(encoderHandle != NULL){
+        printf("Encoders remaining stack: %d words\n", uxTaskGetStackHighWaterMark(encoderHandle));
+    }
     if(estimateHandle != NULL){
         printf("StateEstimator remaining stack: %d words\n", uxTaskGetStackHighWaterMark(estimateHandle));
-    } 
+    }
+    if(pursuitHandle != NULL){
+        printf("PurePursuit remaining stack: %d words\n", uxTaskGetStackHighWaterMark(pursuitHandle));
+    }
     if(teleHandle != NULL){
         printf("SendTelemetry remaining stack: %d words\n\n", uxTaskGetStackHighWaterMark(teleHandle));
     }

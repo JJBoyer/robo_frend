@@ -14,6 +14,7 @@ Description: Header file for tasks.cpp
 #include "sensor_control.hpp"
 #include "telemetry.hpp"
 #include "state_estimation.hpp"
+#include "pure_pursuit.hpp"
 
 /*
 Declare functions for tasks designed to run
@@ -23,6 +24,7 @@ void motorTask(void* pvParameters);
 void ultrasonicTask(void* pvParameters);
 void encoderTask(void* pvParameters);
 void estimateStateTask(void* pvParameters);
+void purePursuitControlTask(void* pvParameters);
 void sendTelemetryTask(void* pvParameters);
 
 #endif

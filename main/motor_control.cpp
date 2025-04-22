@@ -168,8 +168,11 @@ void forward(){
     }
 
     // Set motors full speed
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, MOTOR_HIGH);
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR, MOTOR_HIGH);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR, motorPWM.left);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR, motorPWM.right);
+
+    //printf("LeftPWM: %d\n", motorPWM.left);
+    //printf("RightPWM: %d\n", motorPWM.right);
 
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEFT_MOTOR);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, RIGHT_MOTOR);

@@ -24,6 +24,9 @@ void computeControlPoints(const Pose2D_t& start, const Pose2D_t& end, float d, p
 // Function to create a vector of points to define the path
 void generateBezierPath(const Pose2D_t& start, const Pose2D_t end, float d, int num_points = 50);
 
+// Function to initialize the path
+void initPath();
+
 // Function to create each individual path point
 pathPoint_t bezierPoint(float t, const pathPoint_t& P0, const pathPoint_t& P1, const pathPoint_t& P2, const pathPoint_t& P3);
 

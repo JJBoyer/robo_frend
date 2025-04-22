@@ -23,7 +23,7 @@ unique_ptr<motorOut_t> pduty = nullptr;
 unique_ptr<double> pdist = nullptr;
 unique_ptr<odometry_t> pwheel = nullptr;
 unique_ptr<state_t> pstate = nullptr;
-unique_ptr<queue<Pose2D_t>> pway = nullptr;
+unique_ptr<queue<Pose2D_t>> pwaypt = nullptr;
 unique_ptr<vector<pathPoint_t>> ppath = nullptr;
 
 // Allocate memory for mutexes
@@ -36,7 +36,9 @@ SemaphoreHandle_t pathMutex  = nullptr;
 
 // Define constant system parameters
 const float velocityTarget = 0.2f;
-const float wheelBaseWidth = 0.15f;
+const float wheelBaseWidth = 0.787f;
+const float lookAheadDist = 0.1;
+const float pathPointCount = 100;
 
 void initGlobals() {
 
@@ -60,7 +62,7 @@ void initGlobals() {
 
     { // stateMutex
         MutexGuard lock(stateMutex);
-        pstate.reset(new state_t({0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}));
+        pstate.reset(new state_t({0.0f, 0.0f, 90.0f, 0.0f, 0.0f, 0.0f, 0.0f}));
         if(pstate == nullptr){
             return;
         }
@@ -84,10 +86,11 @@ void initGlobals() {
 
     { // wayMutex
         MutexGuard lock(wayMutex);
-        pway.reset(new queue<Pose2D_t>());
-        if(pway == nullptr){
+        pwaypt.reset(new queue<Pose2D_t>());
+        if(pwaypt == nullptr){
             return;
         }
+        pwaypt->push({1, 1, 90});
     }
 
     { // pathMutex

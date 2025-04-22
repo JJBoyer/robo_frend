@@ -19,27 +19,14 @@ using namespace std;
 */
 void estimateState(mpu6050_handle_t& mpu_sensor){
 
-    // Initialize state_t for current state
-    static state_t current = {
-        .posX = 0.0f,
-        .posY = 0.0f,
-        .th   = 0.0f,
-        .velX = 0.0f,
-        .velY = 0.0f,
-        .w    = 0.0f,
-        .acc  = 0.0f
-    };
-
-    // Initialize state_t for previous state
-    static state_t past = {
-        .posX = 0.0f,
-        .posY = 0.0f,
-        .th   = 0.0f,
-        .velX = 0.0f,
-        .velY = 0.0f,
-        .w    = 0.0f,
-        .acc  = 0.0f
-    };
+    // Initialize state_t for current and current-1 states
+    static state_t current = {};
+    static state_t past = {};
+    {
+        MutexGuard lock(stateMutex);
+        current = *pstate;
+        past = *pstate;
+    }
 
     // Calculate dt for this loop
     static int64_t last_time = 0;
